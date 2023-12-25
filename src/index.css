@@ -115,6 +115,7 @@ input {
   text-transform: uppercase;
   font-weight: 600;
   cursor: pointer;
+  border-radius: 5px;
 }
 
 .contained-btn:hover {
@@ -133,4 +134,45 @@ input {
 .underline {
   color: #363636;
   text-decoration: underline;
+}
+
+.pass-strength {
+  display: flex;
+  align-items: center;
+  margin-top: -15px;
+}
+
+.strength-label {
+  font-size: 12px;
+  margin-left: 10px;
+}
+
+.strength-percent {
+  flex: 1;
+  height: 5px;
+  border-radius: 10px;
+  display: block;
+  background: #eee;
+}
+
+.strength-percent span {
+  display: block;
+  height: 100%;
+  transition: all 0.4s;
+  border-radius: 10px;
+}
+
+.weak {
+  background: #909090;
+  width: 33%;
+}
+
+.average {
+  background: rgb(167, 214, 119);
+  width: 66%;
+}
+
+.strong {
+  background: rgb(33, 168, 91);
+  width: 100%;
 }

@@ -1,15 +1,38 @@
-import { Form } from 'antd';
-import { Link } from 'react-router-dom';
+import { Form, Input, message } from 'antd';
+import { Link, useNavigate } from 'react-router-dom';
+import { loginUser } from '../../requests/users';
 
 function Login() {
-  const onSubmit = (values) => {};
+  const [form] = Form.useForm();
+
+  const navigate = useNavigate();
+
+  const onFinish = async (values) => {
+    try {
+      const res = await loginUser(values);
+      if (res.success) {
+        message.success(res.message);
+        form.resetFields();
+        localStorage.setItem(
+          'user',
+          JSON.stringify({ ...res.data, password: '', confirmPassword: '' })
+        );
+        navigate('/');
+      } else {
+        throw new Error(res.message);
+      }
+    } catch (error) {
+      message.error(error.message);
+    }
+  };
 
   return (
     <div className='flex justify-center items-center h-screen'>
       <Form
         layout='vertical'
         className='w-400 bg-white p-2'
-        onSubmit={onSubmit}
+        onFinish={onFinish}
+        form={form}
       >
         <h2 className='uppercase my-1 text-center'>
           <strong>MedConnect Login</strong>
@@ -19,15 +42,22 @@ function Login() {
           label='Email'
           name='email'
           className='my-1'
+          rules={[
+            { required: true, message: 'Please, input your email!' },
+            { type: 'email', message: 'Please, input a valid email!' },
+          ]}
+          hasFeedback
         >
-          <input type='email' />
+          <Input type='email' />
         </Form.Item>
+
         <Form.Item
           label='Password'
-          name='password'
-          className='my-1'
+          name={'password'}
+          rules={[{ required: true }]}
+          hasFeedback
         >
-          <input type='password' />
+          <Input.Password />
         </Form.Item>
         <button
           className='contained-btn my-1'

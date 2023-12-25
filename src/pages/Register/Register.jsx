@@ -1,9 +1,37 @@
+import { useState } from 'react';
 import { Form, message, Input } from 'antd';
 import { Link } from 'react-router-dom';
 import { createUser } from '../../requests/users';
 
 function Register() {
   const [form] = Form.useForm();
+  const password = Form.useWatch('password', form);
+
+  const [percentBar, setPercentBar] = useState('');
+  const [passLabel, setPassLabel] = useState('Strength');
+
+  const addClass = (className) => {
+    setPercentBar('');
+    if (className) {
+      setPercentBar(className);
+    }
+  };
+
+  const handlePass = () => {
+    if (password?.length === 0) {
+      setPassLabel('Strength');
+      addClass();
+    } else if (password?.length <= 4) {
+      setPassLabel('Weak');
+      addClass('weak');
+    } else if (password?.length <= 7) {
+      setPassLabel('Not Bad');
+      addClass('average');
+    } else {
+      setPassLabel('Strong');
+      addClass('strong');
+    }
+  };
 
   const onFinish = async (values) => {
     try {
@@ -11,6 +39,8 @@ function Register() {
       if (res.success) {
         message.success(res.message);
         form.resetFields();
+        addClass();
+        setPassLabel('Strength');
       } else {
         throw new Error(res.message);
       }
@@ -33,7 +63,7 @@ function Register() {
         <hr />
         <Form.Item
           label='Name'
-          name='Name'
+          name='name'
           className='my-1'
           rules={[
             { required: true, message: 'Please, input your name!' },
@@ -47,7 +77,7 @@ function Register() {
 
         <Form.Item
           label='Email'
-          name='Email'
+          name='email'
           className='my-1'
           rules={[
             { required: true, message: 'Please, input your email!' },
@@ -60,23 +90,42 @@ function Register() {
 
         <Form.Item
           label='Password'
-          name='Password'
-          rules={[{ required: true }]}
+          name={'password'}
+          onChange={handlePass}
+          rules={[
+            { required: true },
+            { min: 6 },
+            {
+              validator: (_, value) =>
+                value &&
+                value.match(/^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[^\w\s])/)
+                  ? Promise.resolve()
+                  : Promise.reject(
+                      'The password must contain numbers, at least one uppercase and lowercase letters and a symbol'
+                    ),
+            },
+          ]}
           hasFeedback
         >
           <Input.Password />
         </Form.Item>
+        <div className='pass-strength'>
+          <div className='strength-percent'>
+            <span className={percentBar}></span>
+          </div>
+          <span className='strength-label'>{passLabel}</span>
+        </div>
 
         <Form.Item
           label='Confirm password'
-          name='ConfirmPassword'
-          dependencies={['Password']}
+          name='confirmPassword'
+          dependencies={['password']}
           className='my-1'
           rules={[
             { required: true },
             ({ getFieldValue }) => ({
               validator(_, value) {
-                if (!value || getFieldValue('Password') === value) {
+                if (!value || getFieldValue('password') === value) {
                   return Promise.resolve();
                 }
                 return Promise.reject("Passwords don't match!");
