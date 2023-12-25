@@ -23,6 +23,10 @@ body {
   justify-content: center;
 }
 
+.justify-between {
+  justify-content: space-between;
+}
+
 .items-center {
   align-items: center;
 }
@@ -91,6 +95,16 @@ body {
 
 .bg-white {
   background-color: #ffff;
+  border: 1px solid #979696;
+  border-radius: 5px;
+}
+
+.text-primary {
+  color: #205e61;
+}
+
+.text-secondary {
+  color: #d61355;
 }
 
 input {
@@ -175,4 +189,24 @@ input {
 .strong {
   background: rgb(33, 168, 91);
   width: 100%;
+}
+
+.cursor-pointer {
+  cursor: pointer;
+}
+
+.gap-small {
+  gap: 5px;
+}
+
+.gap-1 {
+  gap: 10px;
+}
+
+.gap-2 {
+  gap: 20px;
+}
+
+.gap-3 {
+  gap: 30px;
 }

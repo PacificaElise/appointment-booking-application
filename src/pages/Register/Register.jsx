@@ -1,11 +1,13 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Form, message, Input } from 'antd';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { createUser } from '../../requests/users';
 
 function Register() {
   const [form] = Form.useForm();
   const password = Form.useWatch('password', form);
+
+  const navigate = useNavigate();
 
   const [percentBar, setPercentBar] = useState('');
   const [passLabel, setPassLabel] = useState('Strength');
@@ -41,6 +43,7 @@ function Register() {
         form.resetFields();
         addClass();
         setPassLabel('Strength');
+        navigate('/login');
       } else {
         throw new Error(res.message);
       }
@@ -48,6 +51,11 @@ function Register() {
       message.error(error.message);
     }
   };
+
+  useEffect(() => {
+    const user = JSON.parse(localStorage.getItem('user'));
+    if (user) navigate('/');
+  }, []);
 
   return (
     <div className='flex justify-center items-center h-screen'>
