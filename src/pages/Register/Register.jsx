@@ -2,12 +2,16 @@ import { useEffect, useState } from 'react';
 import { Form, message, Input } from 'antd';
 import { Link, useNavigate } from 'react-router-dom';
 import { createUser } from '../../requests/users';
+import { useDispatch } from 'react-redux';
+import { ShowLoader } from '../../redux/loaderSlice';
 
 function Register() {
   const [form] = Form.useForm();
   const password = Form.useWatch('password', form);
 
   const navigate = useNavigate();
+
+  const dispatch = useDispatch();
 
   const [percentBar, setPercentBar] = useState('');
   const [passLabel, setPassLabel] = useState('Strength');
@@ -37,7 +41,9 @@ function Register() {
 
   const onFinish = async (values) => {
     try {
+      dispatch(ShowLoader(true));
       const res = await createUser(values);
+      dispatch(ShowLoader(false));
       if (res.success) {
         message.success(res.message);
         form.resetFields();
@@ -48,6 +54,7 @@ function Register() {
         throw new Error(res.message);
       }
     } catch (error) {
+      dispatch(ShowLoader(false));
       message.error(error.message);
     }
   };
@@ -55,18 +62,19 @@ function Register() {
   useEffect(() => {
     const user = JSON.parse(localStorage.getItem('user'));
     if (user) navigate('/');
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
-    <div className='flex justify-center items-center h-screen'>
+    <section className='flex justify-center items-center h-screen'>
       <Form
         layout='vertical'
         className='w-400 bg-white p-2 py-1'
         onFinish={onFinish}
         form={form}
       >
-        <h2 className='uppercase my-1 text-center'>
-          <strong>MedConnect Register</strong>
+        <h2 className='uppercase my-1 text-center text-primary'>
+          <span className='text-secondary'>Med</span>Connect Register
         </h2>
         <hr />
         <Form.Item
@@ -146,19 +154,19 @@ function Register() {
         </Form.Item>
 
         <button
-          className='contained-btn my-1'
+          className='contained-btn my-1 w-full'
           type='submit'
         >
           register
         </button>
         <Link
-          className='underline'
+          className='underline link'
           to='/login'
         >
           Already have an account? <strong>Sign In</strong>
         </Link>
       </Form>
-    </div>
+    </section>
   );
 }
 

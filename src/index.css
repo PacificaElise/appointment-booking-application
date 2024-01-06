@@ -23,6 +23,10 @@ body {
   justify-content: center;
 }
 
+.justify-end {
+  justify-content: flex-end;
+}
+
 .justify-between {
   justify-content: space-between;
 }
@@ -35,8 +39,20 @@ body {
   height: 100dvh;
 }
 
+.w-800 {
+  width: 800px;
+}
+
 .w-400 {
   width: 400px;
+}
+
+.w-300 {
+  width: 300px;
+}
+
+.w-full {
+  width: 100%;
 }
 
 .p-1 {
@@ -107,34 +123,53 @@ body {
   color: #d61355;
 }
 
-input {
+textarea {
+  min-height: 80px !important;
+  max-height: 200px;
+}
+
+input,
+.ant-input-search-button {
   height: 45px !important;
 }
 
-.ant-input-affix-wrapper-focused {
+input:focus,
+textarea:focus,
+.ant-select-focused,
+.ant-input-number-input-wrap:focus,
+.ant-picker-focused {
   border-color: #494949 !important;
   box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px !important;
 }
 
-.ant-input-affix-wrapper:hover {
-  border-color: #979696;
+input:hover,
+textarea:hover,
+.ant-btn:hover,
+.ant-select:hover,
+.ant-input-number-input-wrap:hover,
+.ant-picker:hover {
+  border-color: #979696 !important;
+}
+
+.ant-btn:hover svg {
+  fill: #979696;
 }
 
 .contained-btn {
-  width: 100%;
   height: 45px;
   border: 0;
-  background-color: #000;
+  background-color: #205e61;
   color: #fff !important;
   text-transform: uppercase;
   font-weight: 600;
   cursor: pointer;
   border-radius: 5px;
+  letter-spacing: 2px;
 }
 
 .contained-btn:hover {
   border: 1px solid #fff;
-  background-color: #909090;
+  background-color: #339da2;
 }
 
 .text-center {
@@ -177,17 +212,17 @@ input {
 }
 
 .weak {
-  background: #909090;
+  background: #d61355;
   width: 33%;
 }
 
 .average {
-  background: rgb(167, 214, 119);
+  background: #44a8ad;
   width: 66%;
 }
 
 .strong {
-  background: rgb(33, 168, 91);
+  background: #2c7c81;
   width: 100%;
 }
 
@@ -209,4 +244,76 @@ input {
 
 .gap-3 {
   gap: 30px;
+}
+
+.page_404 {
+  height: 100dvh;
+  width: 100%;
+  background: #fff;
+}
+
+.four_zero_four_bg {
+  width: 100%;
+  height: 300px;
+  background-image: url(https://cdn.dribbble.com/users/285475/screenshots/2083086/dribbble_1.gif);
+  background-position: center center;
+  background-size: contain;
+  background-repeat: no-repeat;
+}
+
+.four_zero_four_bg h1 {
+  font-size: 60px;
+}
+
+.link_404 {
+  color: #fff;
+  padding: 10px 20px;
+  background: #39ac31;
+  display: inline-block;
+  border: 0;
+  border-radius: 5px;
+}
+
+.link:hover {
+  color: #205e61;
+}
+
+.col {
+  width: 400px;
+}
+
+@media screen and (max-width: 865px) {
+  .col {
+    width: 300px;
+  }
+}
+
+@media screen and (max-width: 665px) {
+  .col {
+    width: 240px;
+  }
+}
+
+@media screen and (max-width: 545px) {
+  .col {
+    width: 100%;
+  }
+}
+
+@media screen and (max-width: 400px) {
+  .header {
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+
+  .login {
+    gap: 10px;
+    flex-wrap: wrap;
+    justify-content: end;
+  }
+
+  .acc {
+    flex-wrap: wrap;
+    justify-content: end;
+  }
 }

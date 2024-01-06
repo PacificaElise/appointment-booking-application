@@ -10,6 +10,7 @@ function ProtectedRoute({ children }) {
     if (!user) {
       navigate('/login');
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   return (
     <div className='layout p-1'>
@@ -22,14 +23,14 @@ function ProtectedRoute({ children }) {
           <span className='text-primary'>Connect</span>
         </h2>
         {user && (
-          <p className='uppercase flex items-center gap-3'>
-            <p
-              className='flex items-center gap-small cursor-pointer'
+          <div className='login uppercase flex items-center gap-3'>
+            <div
+              className='acc flex items-center gap-small cursor-pointer'
               onClick={() => navigate('/profile')}
             >
               <i className='ri-shield-user-line'></i>
               <h4 className='underline'>{user.name}</h4>
-            </p>
+            </div>
 
             <i
               className='ri-logout-box-r-line cursor-pointer'
@@ -38,7 +39,7 @@ function ProtectedRoute({ children }) {
                 navigate('/login');
               }}
             ></i>
-          </p>
+          </div>
         )}
       </header>
       <main className='content my-1 bg-white'>{children}</main>

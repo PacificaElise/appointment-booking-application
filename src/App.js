@@ -4,10 +4,16 @@ import Register from './pages/Register/Register';
 import Home from './pages/Home/Home';
 import ProtectedRoute from './components/ProtectedRoute';
 import Profile from './pages/Profile/Profile';
+import NotFound from './pages/NotFound/NotFound';
+import Loader from './components/Loader/Loader';
+import { useSelector } from 'react-redux';
+import DoctorForm from './pages/DoctorForm/DoctorForm';
 
 function App() {
+  const { loading } = useSelector((state) => state.loader);
   return (
-    <div>
+    <>
+      {loading && <Loader />}
       <BrowserRouter>
         <Routes>
           <Route
@@ -34,9 +40,21 @@ function App() {
               </ProtectedRoute>
             }
           ></Route>
+          <Route
+            path='/apply-doctor'
+            element={
+              <ProtectedRoute>
+                <DoctorForm />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path='*'
+            element={<NotFound />}
+          />
         </Routes>
       </BrowserRouter>
-    </div>
+    </>
   );
 }
 
