@@ -55,6 +55,7 @@ export const loginUser = async (payload) => {
     }
 
     const user = userSnapshots.docs[0].data();
+    user.id = userSnapshots.docs[0].id;
     const bytes = CryptoJS.AES.decrypt(user.password, 'medconnect');
     const originPassword = bytes.toString(CryptoJS.enc.Utf8);
 

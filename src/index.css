@@ -35,6 +35,10 @@ body {
   align-items: center;
 }
 
+.wrap {
+  flex-wrap: wrap;
+}
+
 .h-screen {
   height: 100dvh;
 }
@@ -109,6 +113,10 @@ body {
   margin-bottom: 30px;
 }
 
+.mt-3 {
+  margin-top: 30px;
+}
+
 .bg-white {
   background-color: #ffff;
   border: 1px solid #979696;
@@ -170,6 +178,23 @@ textarea:hover,
 .contained-btn:hover {
   border: 1px solid #fff;
   background-color: #339da2;
+}
+
+.canceled-btn {
+  height: 45px;
+  border: 0;
+  background-color: #d61355;
+  color: #fff !important;
+  text-transform: uppercase;
+  font-weight: 600;
+  cursor: pointer;
+  border-radius: 5px;
+  letter-spacing: 2px;
+}
+
+.canceled-btn:hover {
+  border: 1px solid #fff;
+  background-color: #f55c8f;
 }
 
 .text-center {
@@ -280,6 +305,11 @@ textarea:hover,
 
 .col {
   width: 400px;
+}
+
+.ant-form label,
+label {
+  font-size: 16px !important;
 }
 
 @media screen and (max-width: 865px) {

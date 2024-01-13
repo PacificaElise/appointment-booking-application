@@ -1,23 +1,46 @@
-import { Form, Row, Col, Input, Select, InputNumber, TimePicker } from 'antd';
+import {
+  Form,
+  Row,
+  Col,
+  Input,
+  Select,
+  InputNumber,
+  TimePicker,
+  Checkbox,
+  Divider,
+  message,
+} from 'antd';
+
+import dayjs from 'dayjs';
+
+import { useState } from 'react';
+import { useDispatch } from 'react-redux';
+import { ShowLoader } from '../../redux/loaderSlice';
+import { addDoctor } from '../../requests/doctors';
+import { useNavigate } from 'react-router-dom';
+
+const CheckboxGroup = Checkbox.Group;
+const plainOptions = [
+  'Monday',
+  'Tuesday',
+  'Wednesday',
+  'Thursday',
+  'Friday',
+  'Saturday',
+  'Sunday',
+];
+const defaultCheckedList = [
+  'Monday',
+  'Tuesday',
+  'Wednesday',
+  'Thursday',
+  'Friday',
+];
 
 const Textarea = Input.TextArea;
 
 function DoctorForm() {
-  const onChangeNumber = (value) => {
-    console.log('changed', value);
-  };
-
-  const onChangeSpec = (value) => {
-    console.log(`selected ${value}`);
-  };
-
-  const onChangeTime = (time, timeString) => {
-    console.log(time, timeString);
-  };
-
-  const onSearchSpec = (value) => {
-    console.log('search:', value);
-  };
+  const [form] = Form.useForm();
 
   // Filter `option.label` match the user type `input`
   const filterOptionSpec = (input, option) =>
@@ -28,12 +51,20 @@ function DoctorForm() {
       .toLowerCase()
       .localeCompare((optionB?.label ?? '').toLowerCase());
 
-  const onChangeQual = (value) => {
-    console.log(`selected ${value}`);
+  const format = 'HH:mm';
+
+  const [checkedList, setCheckedList] = useState(defaultCheckedList);
+
+  const checkAll = plainOptions.length === checkedList.length;
+  const indeterminate =
+    checkedList.length > 0 && checkedList.length < plainOptions.length;
+
+  const onChangeDay = (list) => {
+    setCheckedList(list);
   };
 
-  const onSearchQual = (value) => {
-    console.log('search:', value);
+  const onCheckAllChangeDay = (e) => {
+    setCheckedList(e.target.checked ? plainOptions : []);
   };
 
   // Filter `option.label` match the user type `input`
@@ -45,12 +76,43 @@ function DoctorForm() {
       .toLowerCase()
       .localeCompare((optionB?.label ?? '').toLowerCase());
 
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+  const onFinish = async (values) => {
+    try {
+      dispatch(ShowLoader(true));
+      const payload = {
+        ...values,
+        checkedList,
+        userId: JSON.parse(localStorage.getItem('user')).id,
+      };
+      const response = await addDoctor(payload);
+      if (response.success) {
+        message.success(response.message);
+        form.resetFields();
+        navigate('/profile');
+      } else {
+        console.log(payload, response.message);
+        throw new Error(response.message);
+      }
+    } catch (error) {
+      dispatch(ShowLoader(false));
+      message.error(error.message);
+    }
+  };
+
   return (
     <section className='p-2'>
       <h4 className='uppercase'>Apply for a Doctor Account</h4>
       <hr className='my-1' />
 
-      <Form layout='vertical'>
+      <Form
+        layout='vertical'
+        onFinish={onFinish}
+        form={form}
+      >
+        <h4 className='uppercase my-2'>Personal information</h4>
         <Row gutter={[16, 16]}>
           <Col className='col'>
             <Form.Item
@@ -122,7 +184,13 @@ function DoctorForm() {
             <Form.Item
               label='Website'
               name='website'
-              rules={[{ type: 'url', message: 'Please, input a valid url!' }]}
+              rules={[
+                {
+                  required: true,
+                  type: 'url',
+                  message: 'Please, input a valid url!',
+                },
+              ]}
             >
               <Input type='text' />
             </Form.Item>
@@ -142,8 +210,8 @@ function DoctorForm() {
           </Col>
         </Row>
 
-        <h4 className='uppercase'>Professional information</h4>
         <hr className='my-1' />
+        <h4 className='uppercase my-2'>Professional information</h4>
         <Row gutter={[16, 16]}>
           <Col className='col'>
             <Form.Item
@@ -157,8 +225,6 @@ function DoctorForm() {
                 showSearch
                 placeholder='Select a speciality'
                 optionFilterProp='children'
-                onChange={onChangeSpec}
-                onSearch={onSearchSpec}
                 filterOption={filterOptionSpec}
                 filterSort={filterSortSpec}
                 options={[
@@ -217,13 +283,15 @@ function DoctorForm() {
 
           <Col className='col'>
             <Form.Item
-              label='Experience'
+              label='Experience, years'
               name='experience'
+              rules={[
+                { required: true, message: 'Please, enter your experience!' },
+              ]}
             >
               <InputNumber
                 min={1}
                 defaultValue={1}
-                onChange={onChangeNumber}
               />
             </Form.Item>
           </Col>
@@ -243,8 +311,6 @@ function DoctorForm() {
                 showSearch
                 placeholder='Select a qualification'
                 optionFilterProp='children'
-                onChange={onChangeQual}
-                onSearch={onSearchQual}
                 filterOption={filterOptionQual}
                 filterSort={filterSortQual}
                 options={[
@@ -270,26 +336,86 @@ function DoctorForm() {
           </Col>
         </Row>
 
-        <h4 className='uppercase'>Working hours</h4>
         <hr className='my-1' />
-        <Row gutter={[16, 16]}>
-          <Col className='col'>
+        <h4 className='uppercase my-2'>Working hours</h4>
+        <Row gutter={[24, 24]}>
+          <Col
+            span={8}
+            className='col'
+          >
             <Form.Item
               label='Start Time'
               name='startTime'
-              rules={[
-                { required: true, message: 'Required' },
-                { whitespace: true },
-              ]}
+              rules={[{ required: true, message: 'Required' }]}
             >
               <TimePicker
-                use12Hours
-                format='h:mm a'
-                onChange={onChangeTime}
+                defaultValue={dayjs('09:00', format)}
+                format={format}
+              />
+            </Form.Item>
+          </Col>
+
+          <Col
+            span={8}
+            className='col'
+          >
+            <Form.Item
+              label='End Time'
+              name='endTime'
+              rules={[{ required: true, message: 'Required' }]}
+            >
+              <TimePicker
+                defaultValue={dayjs('18:00', format)}
+                format={format}
+              />
+            </Form.Item>
+          </Col>
+
+          <Col
+            span={8}
+            className='col'
+          >
+            <Form.Item
+              label='Fee, $'
+              name='fee'
+              rules={[{ required: true, message: 'Please, enter a fee' }]}
+            >
+              <InputNumber
+                min={1}
+                defaultValue={1}
               />
             </Form.Item>
           </Col>
         </Row>
+        <Row>
+          <Checkbox
+            indeterminate={indeterminate}
+            onChange={onCheckAllChangeDay}
+            checked={checkAll}
+          >
+            Check all
+          </Checkbox>
+          <Divider />
+          <CheckboxGroup
+            options={plainOptions}
+            value={checkedList}
+            onChange={onChangeDay}
+          />
+        </Row>
+        <div className='flex justify-end items-center gap-2 mt-3'>
+          <button
+            className='canceled-btn w-300'
+            type='reset'
+          >
+            Cancel
+          </button>
+          <button
+            className='contained-btn w-300'
+            type='submit'
+          >
+            Submit
+          </button>
+        </div>
       </Form>
     </section>
   );
