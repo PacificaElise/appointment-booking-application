@@ -53,6 +53,17 @@ function DoctorForm() {
 
   const format = 'HH:mm';
 
+  const [startTime, setStartTime] = useState(null);
+  const [endTime, setEndTime] = useState(null);
+
+  const onChangeStartTime = (time, timeString) => {
+    setStartTime(timeString);
+  };
+
+  const onChangeEndTime = (time, timeString) => {
+    setEndTime(timeString);
+  };
+
   const [checkedList, setCheckedList] = useState(defaultCheckedList);
 
   const checkAll = plainOptions.length === checkedList.length;
@@ -84,6 +95,8 @@ function DoctorForm() {
       dispatch(ShowLoader(true));
       const payload = {
         ...values,
+        startTime,
+        endTime,
         checkedList,
         userId: JSON.parse(localStorage.getItem('user')).id,
       };
@@ -92,8 +105,8 @@ function DoctorForm() {
         message.success(response.message);
         form.resetFields();
         navigate('/profile');
+        dispatch(ShowLoader(false));
       } else {
-        console.log(payload, response.message);
         throw new Error(response.message);
       }
     } catch (error) {
@@ -291,7 +304,7 @@ function DoctorForm() {
             >
               <InputNumber
                 min={1}
-                defaultValue={1}
+                placeholder='Set years'
               />
             </Form.Item>
           </Col>
@@ -349,8 +362,10 @@ function DoctorForm() {
               rules={[{ required: true, message: 'Required' }]}
             >
               <TimePicker
-                defaultValue={dayjs('09:00', format)}
+                placeholder='Set time'
                 format={format}
+                value={startTime}
+                onChange={onChangeStartTime}
               />
             </Form.Item>
           </Col>
@@ -365,8 +380,10 @@ function DoctorForm() {
               rules={[{ required: true, message: 'Required' }]}
             >
               <TimePicker
-                defaultValue={dayjs('18:00', format)}
+                placeholder='Set time'
                 format={format}
+                value={endTime}
+                onChange={onChangeEndTime}
               />
             </Form.Item>
           </Col>
@@ -382,7 +399,7 @@ function DoctorForm() {
             >
               <InputNumber
                 min={1}
-                defaultValue={1}
+                placeholder='Set fee'
               />
             </Form.Item>
           </Col>
