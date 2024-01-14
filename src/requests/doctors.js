@@ -1,18 +1,17 @@
 import database from '../firebaseConfig';
 import {
   collection,
-  addDoc,
-  getDoc,
-  doc,
   getDocs,
   query,
   where,
+  setDoc,
+  doc,
 } from 'firebase/firestore';
 
 export const addDoctor = async (payload) => {
   try {
-    const docRef = collection(database, 'doctors');
-    await addDoc(docRef, payload);
+    const docRef = doc(database, 'doctors', payload.userId);
+    await setDoc(docRef, payload);
     return {
       success: true,
       message: 'Doctor added successfully, wait for approval, please',
@@ -45,5 +44,19 @@ export const checkDoctorApplied = async (id) => {
       success: false,
       message: error.message,
     };
+  }
+};
+
+export const getDoctors = async () => {
+  try {
+    const doctors = await getDocs(collection(database, 'doctors'));
+    return {
+      success: true,
+      data: doctors.docs.map((doc) => {
+        return { key: doc.id, id: doc.id, ...doc.data() };
+      }),
+    };
+  } catch (error) {
+    return error;
   }
 };

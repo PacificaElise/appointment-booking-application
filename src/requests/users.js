@@ -72,3 +72,17 @@ export const loginUser = async (payload) => {
     return error;
   }
 };
+
+export const getUsers = async () => {
+  try {
+    const users = await getDocs(collection(database, 'users'));
+    return {
+      success: true,
+      data: users.docs.map((doc) => {
+        return { key: doc.id, id: doc.id, ...doc.data() };
+      }),
+    };
+  } catch (error) {
+    return error;
+  }
+};

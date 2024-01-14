@@ -42,7 +42,10 @@ function Register() {
   const onFinish = async (values) => {
     dispatch(ShowLoader(true));
     try {
-      const res = await createUser(values);
+      const res = await createUser({
+        ...values,
+        role: 'user',
+      });
       if (res.success) {
         message.success(res.message);
         form.resetFields();

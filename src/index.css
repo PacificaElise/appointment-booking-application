@@ -5,6 +5,7 @@
   padding: 0;
   margin: 0;
   font-family: 'Montserrat', Verdana, sans-serif !important;
+  font-size: 16px;
 }
 
 body {
@@ -125,10 +126,12 @@ body {
 
 .text-primary {
   color: #205e61;
+  font-size: 20px;
 }
 
 .text-secondary {
   color: #d61355;
+  font-size: 20px;
 }
 
 textarea {
@@ -307,9 +310,30 @@ textarea:hover,
   width: 400px;
 }
 
+.ant-checkbox-wrapper span {
+  font-size: 20px !important;
+}
+
 .ant-form label,
 label {
-  font-size: 16px !important;
+  font-size: 20px !important;
+}
+
+.ant-tabs-tab-btn {
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.ant-tabs-tab:hover .ant-tabs-tab-btn {
+  color: #2c7c81;
+}
+
+.ant-tabs-tab-active .ant-tabs-tab-btn {
+  color: #205e61 !important;
+}
+
+.ant-tabs-ink-bar-animated {
+  background: #205e61 !important;
 }
 
 @media screen and (max-width: 865px) {

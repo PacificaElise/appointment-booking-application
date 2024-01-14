@@ -8,6 +8,7 @@ import NotFound from './pages/NotFound/NotFound';
 import Loader from './components/Loader/Loader';
 import { useSelector } from 'react-redux';
 import DoctorForm from './pages/DoctorForm/DoctorForm';
+import Admin from './pages/Admin/Admin';
 
 function App() {
   const { loading } = useSelector((state) => state.loader);
@@ -45,6 +46,14 @@ function App() {
             element={
               <ProtectedRoute>
                 <DoctorForm />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path='/admin'
+            element={
+              <ProtectedRoute>
+                <Admin />
               </ProtectedRoute>
             }
           />
