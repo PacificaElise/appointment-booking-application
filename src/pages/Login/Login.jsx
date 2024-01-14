@@ -13,10 +13,9 @@ function Login() {
   const dispatch = useDispatch();
 
   const onFinish = async (values) => {
+    dispatch(ShowLoader(true));
     try {
-      dispatch(ShowLoader(true));
       const res = await loginUser(values);
-      dispatch(ShowLoader(false));
       if (res.success) {
         message.success(res.message);
         form.resetFields();
@@ -28,6 +27,7 @@ function Login() {
       } else {
         throw new Error(res.message);
       }
+      dispatch(ShowLoader(false));
     } catch (error) {
       dispatch(ShowLoader(false));
       message.error(error.message);

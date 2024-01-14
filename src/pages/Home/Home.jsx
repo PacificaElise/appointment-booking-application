@@ -1,9 +1,11 @@
 import { Input } from 'antd';
 import { useNavigate } from 'react-router-dom';
+
 const Search = Input.Search;
 
 function Home() {
   const navigate = useNavigate();
+
   return (
     <section className='flex justify-between p-2'>
       <div>

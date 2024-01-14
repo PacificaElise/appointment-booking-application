@@ -11,12 +11,10 @@ import {
   message,
 } from 'antd';
 
-import dayjs from 'dayjs';
-
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { ShowLoader } from '../../redux/loaderSlice';
-import { addDoctor } from '../../requests/doctors';
+import { addDoctor, checkDoctorApplied } from '../../requests/doctors';
 import { useNavigate } from 'react-router-dom';
 
 const CheckboxGroup = Checkbox.Group;
@@ -90,32 +88,55 @@ function DoctorForm() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
+  const [applied, setApplied] = useState(false);
+
   const onFinish = async (values) => {
+    dispatch(ShowLoader(true));
     try {
-      dispatch(ShowLoader(true));
       const payload = {
         ...values,
         startTime,
         endTime,
         checkedList,
         userId: JSON.parse(localStorage.getItem('user')).id,
+        status: 'pending',
       };
       const response = await addDoctor(payload);
       if (response.success) {
         message.success(response.message);
         form.resetFields();
         navigate('/profile');
-        dispatch(ShowLoader(false));
       } else {
         throw new Error(response.message);
       }
+      dispatch(ShowLoader(false));
     } catch (error) {
       dispatch(ShowLoader(false));
       message.error(error.message);
     }
   };
 
-  return (
+  const checkApplied = async () => {
+    dispatch(ShowLoader(true));
+    try {
+      const res = await checkDoctorApplied(
+        JSON.parse(localStorage.getItem('user')).id
+      );
+      if (res.success) {
+        setApplied(true);
+      }
+      dispatch(ShowLoader(false));
+    } catch (error) {
+      dispatch(ShowLoader(false));
+      message.error(error.message);
+    }
+  };
+
+  useEffect(() => {
+    checkApplied();
+  }, []);
+
+  return !applied ? (
     <section className='p-2'>
       <h4 className='uppercase'>Apply for a Doctor Account</h4>
       <hr className='my-1' />
@@ -175,7 +196,10 @@ function DoctorForm() {
               label='Phone'
               name='phone'
               rules={[
-                { required: true, message: 'Please, input your phone number!' },
+                {
+                  required: true,
+                  message: 'Please, input your phone number!',
+                },
                 {
                   validator: (_, value) =>
                     value &&
@@ -231,7 +255,10 @@ function DoctorForm() {
               label='Speciality'
               name='speciality'
               rules={[
-                { required: true, message: 'Please, select your speciality!' },
+                {
+                  required: true,
+                  message: 'Please, select your speciality!',
+                },
               ]}
             >
               <Select
@@ -435,6 +462,14 @@ function DoctorForm() {
         </div>
       </Form>
     </section>
+  ) : (
+    <div className='flex flex-col items-center gap-2 p-2'>
+      <h3 className='text-secondary'>
+        You have already applied for this account, please, wait for the admin to
+        approve your request.
+      </h3>
+      <button></button>
+    </div>
   );
 }
 
