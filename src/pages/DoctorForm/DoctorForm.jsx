@@ -100,6 +100,7 @@ function DoctorForm() {
         checkedList,
         userId: JSON.parse(localStorage.getItem('user')).id,
         status: 'pending',
+        role: 'doctor',
       };
       const response = await addDoctor(payload);
       if (response.success) {

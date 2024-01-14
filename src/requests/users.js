@@ -1,5 +1,13 @@
 import database from '../firebaseConfig';
-import { collection, addDoc, getDocs, query, where } from 'firebase/firestore';
+import {
+  collection,
+  addDoc,
+  getDocs,
+  query,
+  where,
+  getDoc,
+  doc,
+} from 'firebase/firestore';
 import CryptoJS from 'crypto-js';
 
 export const createUser = async (payload) => {
@@ -81,6 +89,21 @@ export const getUsers = async () => {
       data: users.docs.map((doc) => {
         return { key: doc.id, id: doc.id, ...doc.data() };
       }),
+    };
+  } catch (error) {
+    return error;
+  }
+};
+
+export const getUserById = async (id) => {
+  try {
+    const user = await getDoc(doc(database, 'users', id));
+    return {
+      success: true,
+      data: {
+        ...user.data(),
+        id: user.id,
+      },
     };
   } catch (error) {
     return error;

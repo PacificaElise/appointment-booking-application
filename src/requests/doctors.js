@@ -6,12 +6,16 @@ import {
   where,
   setDoc,
   doc,
+  updateDoc,
 } from 'firebase/firestore';
 
 export const addDoctor = async (payload) => {
   try {
     const docRef = doc(database, 'doctors', payload.userId);
     await setDoc(docRef, payload);
+    await updateDoc(doc(database, 'users', payload.userId), {
+      role: 'doctor',
+    });
     return {
       success: true,
       message: 'Doctor added successfully, wait for approval, please',
@@ -55,6 +59,18 @@ export const getDoctors = async () => {
       data: doctors.docs.map((doc) => {
         return { key: doc.id, id: doc.id, ...doc.data() };
       }),
+    };
+  } catch (error) {
+    return error;
+  }
+};
+
+export const updateDoctor = async (payload) => {
+  try {
+    await setDoc(doc(database, 'doctors', payload.id), payload);
+    return {
+      success: true,
+      message: "Doctor's information updated successfully",
     };
   } catch (error) {
     return error;

@@ -139,9 +139,12 @@ textarea {
   max-height: 200px;
 }
 
-input,
-.ant-input-search-button {
+input {
   height: 45px !important;
+}
+
+.ant-input-search-button {
+  height: 54px !important;
 }
 
 input:focus,
@@ -155,7 +158,6 @@ textarea:focus,
 
 input:hover,
 textarea:hover,
-.ant-btn:hover,
 .ant-select:hover,
 .ant-input-number-input-wrap:hover,
 .ant-picker:hover {
@@ -334,6 +336,17 @@ label {
 
 .ant-tabs-ink-bar-animated {
   background: #205e61 !important;
+}
+
+.action:hover {
+  color: #205e61;
+}
+
+.block {
+  background-color: #f6f6f6;
+  border-radius: 5px;
+  box-shadow: rgba(149, 157, 165, 0.5) 0px 8px 24px;
+  min-width: 300px;
 }
 
 @media screen and (max-width: 865px) {
