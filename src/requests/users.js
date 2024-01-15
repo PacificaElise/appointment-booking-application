@@ -91,7 +91,10 @@ export const getUsers = async () => {
       }),
     };
   } catch (error) {
-    return error;
+    return {
+      success: false,
+      message: error.message,
+    };
   }
 };
 
@@ -106,6 +109,9 @@ export const getUserById = async (id) => {
       },
     };
   } catch (error) {
-    return error;
+    return {
+      success: false,
+      message: error.message,
+    };
   }
 };

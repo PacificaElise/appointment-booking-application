@@ -77,7 +77,7 @@ function Home() {
               </div>
               <div className='flex justify-between items-center gap-2'>
                 <h5>Experience:</h5>
-                <h4 className='uppercase'>{doctor.experience} years</h4>
+                <h4>{doctor.experience} years</h4>
               </div>
               <div className='flex justify-between items-center gap-2'>
                 <h5>Fee:</h5>

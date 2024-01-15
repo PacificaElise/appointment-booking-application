@@ -7,6 +7,7 @@ import {
   setDoc,
   doc,
   updateDoc,
+  getDoc,
 } from 'firebase/firestore';
 
 export const addDoctor = async (payload) => {
@@ -61,7 +62,10 @@ export const getDoctors = async () => {
       }),
     };
   } catch (error) {
-    return error;
+    return {
+      success: false,
+      message: error.message,
+    };
   }
 };
 
@@ -73,6 +77,24 @@ export const updateDoctor = async (payload) => {
       message: "Doctor's information updated successfully",
     };
   } catch (error) {
-    return error;
+    return {
+      success: false,
+      message: error.message,
+    };
+  }
+};
+
+export const getDoctorById = async (id) => {
+  try {
+    const doctor = await getDoc(doc(database, 'doctors', id));
+    return {
+      success: true,
+      data: doctor.data(),
+    };
+  } catch (error) {
+    return {
+      success: false,
+      message: error.message,
+    };
   }
 };

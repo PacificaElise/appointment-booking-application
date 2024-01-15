@@ -140,7 +140,7 @@ function DoctorForm() {
 
   return !applied ? (
     <section className='p-2'>
-      <h4 className='uppercase'>Apply for a Doctor Account</h4>
+      <h4 className='uppercase bold'>Apply for a Doctor Account</h4>
       <hr className='my-1' />
 
       <Form
@@ -148,7 +148,7 @@ function DoctorForm() {
         onFinish={onFinish}
         form={form}
       >
-        <h4 className='uppercase my-2'>Personal information</h4>
+        <h4 className='uppercase my-2 bold'>Personal information</h4>
         <Row gutter={[16, 16]}>
           <Col className='col'>
             <Form.Item
@@ -250,7 +250,7 @@ function DoctorForm() {
         </Row>
 
         <hr className='my-1' />
-        <h4 className='uppercase my-2'>Professional information</h4>
+        <h4 className='uppercase my-2 bold'>Professional information</h4>
         <Row gutter={[16, 16]}>
           <Col className='col'>
             <Form.Item
@@ -379,7 +379,7 @@ function DoctorForm() {
         </Row>
 
         <hr className='my-1' />
-        <h4 className='uppercase my-2'>Working hours</h4>
+        <h4 className='uppercase my-2 bold'>Working hours</h4>
         <Row gutter={[24, 24]}>
           <Col
             span={8}

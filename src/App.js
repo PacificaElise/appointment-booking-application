@@ -9,6 +9,7 @@ import Loader from './components/Loader/Loader';
 import { useSelector } from 'react-redux';
 import DoctorForm from './pages/DoctorForm/DoctorForm';
 import Admin from './pages/Admin/Admin';
+import BookAppointment from './pages/BookAppointment/BookAppointment';
 
 function App() {
   const { loading } = useSelector((state) => state.loader);
@@ -30,6 +31,14 @@ function App() {
             element={
               <ProtectedRoute>
                 <Home />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path='/book-appointment/:id'
+            element={
+              <ProtectedRoute>
+                <BookAppointment />
               </ProtectedRoute>
             }
           />

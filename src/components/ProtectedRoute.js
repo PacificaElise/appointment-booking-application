@@ -23,13 +23,13 @@ function ProtectedRoute({ children }) {
           <span className='text-primary'>Connect</span>
         </h2>
         {user && (
-          <div className='login uppercase flex items-center gap-3'>
+          <div className='login uppercase flex items-center gap-3 '>
             <div
               className='acc flex items-center gap-small cursor-pointer'
               onClick={() => navigate('/profile')}
             >
               <i className='ri-shield-user-line'></i>
-              <h4 className='underline'>{user.name}</h4>
+              <h4 className='underline bold'>{user.name}</h4>
             </div>
 
             <i

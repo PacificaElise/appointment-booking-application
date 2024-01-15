@@ -6,10 +6,16 @@
   margin: 0;
   font-family: 'Montserrat', Verdana, sans-serif !important;
   font-size: 16px;
+  font-weight: 500;
+  color: #363636;
 }
 
 body {
   background-color: #e4e4e4;
+}
+
+.bold {
+  font-weight: 800;
 }
 
 .flex {
@@ -58,6 +64,10 @@ body {
 
 .w-full {
   width: 100%;
+}
+
+.w-half {
+  width: 50%;
 }
 
 .p-1 {
@@ -127,10 +137,20 @@ body {
 .text-primary {
   color: #205e61;
   font-size: 20px;
+  font-weight: 700;
 }
 
 .text-secondary {
   color: #d61355;
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.warn {
+  color: #d61355;
+}
+
+.name {
   font-size: 20px;
 }
 
@@ -170,7 +190,6 @@ textarea:hover,
 
 .contained-btn {
   height: 45px;
-  border: 0;
   background-color: #205e61;
   color: #fff !important;
   text-transform: uppercase;
@@ -178,6 +197,7 @@ textarea:hover,
   cursor: pointer;
   border-radius: 5px;
   letter-spacing: 2px;
+  border: 0;
 }
 
 .contained-btn:hover {
@@ -204,6 +224,10 @@ textarea:hover,
 
 .text-center {
   text-align: center;
+}
+
+.text-right {
+  text-align: right;
 }
 
 .uppercase {
@@ -308,21 +332,29 @@ textarea:hover,
   color: #205e61;
 }
 
+.link:hover span {
+  color: #205e61;
+}
+
+.anticon svg {
+  fill: #979696;
+}
+
 .col {
   width: 400px;
 }
 
 .ant-checkbox-wrapper span {
-  font-size: 20px !important;
+  font-size: 16px !important;
 }
 
 .ant-form label,
 label {
-  font-size: 20px !important;
+  font-size: 16px !important;
 }
 
 .ant-tabs-tab-btn {
-  font-size: 20px;
+  font-size: 16px;
   font-weight: 600;
 }
 
@@ -349,6 +381,18 @@ label {
   min-width: 300px;
 }
 
+.slot:hover {
+  background-color: #f6f6f6;
+}
+
+hr {
+  border: 1px #979696 solid;
+}
+
+.doctor-card {
+  width: 400px;
+}
+
 @media screen and (max-width: 865px) {
   .col {
     width: 300px;
@@ -364,6 +408,10 @@ label {
 @media screen and (max-width: 545px) {
   .col {
     width: 100%;
+  }
+
+  .doctor-card {
+    width: 300px;
   }
 }
 
@@ -382,5 +430,35 @@ label {
   .acc {
     flex-wrap: wrap;
     justify-content: end;
+  }
+
+  * {
+    font-size: 14px;
+  }
+
+  .text-primary {
+    font-size: 16px;
+  }
+
+  .text-secondary {
+    font-size: 16px;
+  }
+
+  .name {
+    font-size: 16px;
+  }
+
+  .ant-checkbox-wrapper span {
+    font-size: 14px !important;
+  }
+
+  .ant-form label,
+  label {
+    font-size: 14px !important;
+  }
+
+  .ant-tabs-tab-btn {
+    font-size: 14px;
+    font-weight: 500;
   }
 }

@@ -83,7 +83,7 @@ function Login() {
           className='underline link'
           to='/register'
         >
-          Don't have an account? <strong>Sign Up</strong>
+          Don't have an account? <span className='bold'>Sign Up</span>
         </Link>
       </Form>
     </section>

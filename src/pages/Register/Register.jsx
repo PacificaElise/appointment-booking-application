@@ -166,7 +166,7 @@ function Register() {
           className='underline link'
           to='/login'
         >
-          Already have an account? <strong>Sign In</strong>
+          Already have an account? <span className='bold'>Sign In</span>
         </Link>
       </Form>
     </section>

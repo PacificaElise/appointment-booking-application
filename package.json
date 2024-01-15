@@ -10,6 +10,7 @@
     "antd": "^5.12.5",
     "crypto-js": "^4.2.0",
     "firebase": "^10.7.1",
+    "moment": "^2.30.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-highlight-words": "^0.20.0",
