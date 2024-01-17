@@ -448,18 +448,27 @@ function DoctorForm() {
             onChange={onChangeDay}
           />
         </Row>
-        <div className='flex justify-end items-center gap-2 mt-3'>
+        <div className='flex items-center gap-2 mt-3 wrap'>
           <button
-            className='canceled-btn w-300'
+            className='canceled-btn w-200'
             type='reset'
+            onClick={() => navigate('/')}
           >
             Cancel
           </button>
+
           <button
-            className='contained-btn w-300'
+            className='contained-btn w-200'
             type='submit'
           >
             Submit
+          </button>
+
+          <button
+            className='canceled-btn w-200'
+            type='reset'
+          >
+            Clear form
           </button>
         </div>
       </Form>
