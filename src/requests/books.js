@@ -1,4 +1,13 @@
-import { addDoc, collection, getDocs, query, where } from 'firebase/firestore';
+import {
+  addDoc,
+  collection,
+  doc,
+  getDocs,
+  query,
+  setDoc,
+  updateDoc,
+  where,
+} from 'firebase/firestore';
 import database from '../firebaseConfig';
 
 export const bookAppointment = async (payload) => {
@@ -48,7 +57,12 @@ export const getDoctorAppointments = async (doctorId) => {
       )
     );
     const data = [];
-    querySnapshot.forEach((doc) => data.push(doc.data()));
+    querySnapshot.forEach((doc) =>
+      data.push({
+        ...doc.data(),
+        id: doc.id,
+      })
+    );
     return {
       success: true,
       data,
@@ -67,7 +81,12 @@ export const getUserAppointments = async (userId) => {
       query(collection(database, 'appointments'), where('userId', '==', userId))
     );
     const data = [];
-    querySnapshot.forEach((doc) => data.push(doc.data()));
+    querySnapshot.forEach((doc) =>
+      data.push({
+        ...doc.data(),
+        id: doc.id,
+      })
+    );
     return {
       success: true,
       data,
@@ -84,10 +103,32 @@ export const getAllAppointments = async () => {
   try {
     const appointments = await getDocs(collection(database, 'appointments'));
     const data = [];
-    appointments.forEach((doc) => data.push(doc.data()));
+    appointments.forEach((doc) =>
+      data.push({
+        ...doc.data(),
+        id: doc.id,
+      })
+    );
     return {
       success: true,
       data: data,
+    };
+  } catch (error) {
+    return {
+      success: false,
+      message: error.message,
+    };
+  }
+};
+
+export const updateAppointmentStatus = async (id, status) => {
+  try {
+    await updateDoc(doc(database, 'appointments', id), {
+      status,
+    });
+    return {
+      success: true,
+      message: "Appointment's status updated",
     };
   } catch (error) {
     return {

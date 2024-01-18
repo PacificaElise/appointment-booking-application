@@ -47,11 +47,11 @@ function BookAppointment() {
       if (res.success) {
         setDoctor(res.data);
       } else throw new Error(res.message);
-      dispatch(ShowLoader(false));
     } catch (error) {
-      dispatch(ShowLoader(false));
       message.error(error.message);
+    } finally {
     }
+    dispatch(ShowLoader(false));
   };
 
   const getSlotsData = () => {
@@ -120,10 +120,10 @@ function BookAppointment() {
         message.success(res.message);
         navigate('/profile');
       } else throw new Error(res.message);
-      dispatch(ShowLoader(false));
     } catch (error) {
-      dispatch(ShowLoader(false));
       message.error(error.message);
+    } finally {
+      dispatch(ShowLoader(false));
     }
   };
 
@@ -134,10 +134,10 @@ function BookAppointment() {
       if (res.success) {
         setBookedSlots(res.data);
       } else throw new Error(res.message);
-      dispatch(ShowLoader(false));
     } catch (error) {
-      dispatch(ShowLoader(false));
       message.error(error.message);
+    } finally {
+      dispatch(ShowLoader(false));
     }
   };
 
@@ -180,7 +180,7 @@ function BookAppointment() {
 
             <div className='flex justify-between items-center gap-2'>
               <h5 className='bold'>Fee:</h5>
-              <h4>{doctor.fee} $ per session</h4>
+              <h4>{doctor.fee} $ /per session</h4>
             </div>
             <div className='flex justify-between items-center gap-2'>
               <h5 className='bold'>Available days:</h5>

@@ -1,9 +1,10 @@
 import { useState, useEffect, useRef } from 'react';
 import { useDispatch } from 'react-redux';
 import { ShowLoader } from '../../redux/loaderSlice';
-import { Button, Input, Space, Table, message } from 'antd';
+import { Button, Input, Space, message } from 'antd';
 import { SearchOutlined } from '@ant-design/icons';
 import Highlighter from 'react-highlight-words';
+import Table from 'ant-responsive-table';
 
 import { getUsers } from '../../requests/users';
 
@@ -19,10 +20,10 @@ function UsersList() {
       if (res.success) {
         setUsers(res.data);
       } else throw new Error(res.message);
-      dispatch(ShowLoader(false));
     } catch (error) {
-      dispatch(ShowLoader(false));
       message.error(error.message);
+    } finally {
+      dispatch(ShowLoader(false));
     }
   };
 
@@ -33,6 +34,10 @@ function UsersList() {
 
   const [searchText, setSearchText] = useState('');
   const [searchedColumn, setSearchedColumn] = useState('');
+
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
+
   const searchInput = useRef(null);
   const handleSearch = (selectedKeys, confirm, dataIndex) => {
     confirm();
@@ -150,10 +155,19 @@ function UsersList() {
     {
       title: 'ID',
       dataIndex: 'id',
+      key: 'id',
+
+      showOnResponse: true,
+      showOnDesktop: true,
     },
     {
       title: 'Name',
       dataIndex: 'name',
+      key: 'name',
+
+      showOnResponse: true,
+      showOnDesktop: true,
+
       ...getColumnSearchProps('name'),
       sorter: (a, b) =>
         a.name.localeCompare(b.name, undefined, {
@@ -165,6 +179,11 @@ function UsersList() {
     {
       title: 'Email',
       dataIndex: 'email',
+      key: 'email',
+
+      showOnResponse: true,
+      showOnDesktop: true,
+
       ...getColumnSearchProps('email'),
       sorter: (a, b) =>
         a.email.localeCompare(b.email, undefined, {
@@ -176,6 +195,11 @@ function UsersList() {
     {
       title: 'Role',
       dataIndex: 'role',
+      key: 'role',
+
+      showOnResponse: true,
+      showOnDesktop: true,
+
       filters: [
         {
           text: 'Doctor',
@@ -192,7 +216,11 @@ function UsersList() {
       ],
 
       onFilter: (value, record) => record.role.indexOf(value) === 0,
-      sorter: (a, b) => a.role.length - b.role.length,
+      sorter: (a, b) =>
+        a.role.localeCompare(b.role, undefined, {
+          numeric: true,
+          sensitivity: 'base',
+        }),
       sortDirections: ['descend', 'ascend'],
       render: (text, record) => {
         return text.toUpperCase();
@@ -200,12 +228,29 @@ function UsersList() {
     },
   ];
 
+  const dataSource = users;
+
   return (
     <div>
       <Table
-        columns={columns}
-        dataSource={users}
-      ></Table>
+        antTableProps={{
+          rowKey: (record) => record.id,
+          showHeader: true,
+          columns,
+          dataSource,
+          bordered: true,
+
+          pagination: {
+            current: page,
+            pageSize: pageSize,
+            onChange: (page, pageSize) => {
+              setPage(page);
+              setPageSize(pageSize);
+            },
+          },
+        }}
+        mobileBreakPoint={800}
+      />
     </div>
   );
 }

@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { Button, Input, Space, Table, message } from 'antd';
+import { Button, Input, Space, message } from 'antd';
 import { SearchOutlined } from '@ant-design/icons';
 import Highlighter from 'react-highlight-words';
 import { useDispatch } from 'react-redux';
@@ -8,13 +8,18 @@ import {
   getAllAppointments,
   getDoctorAppointments,
   getUserAppointments,
+  updateAppointmentStatus,
 } from '../../requests/books';
+import Table from 'ant-responsive-table';
 
 function Appointments() {
   const [appointments, setAppointments] = useState([]);
 
   const [searchText, setSearchText] = useState('');
   const [searchedColumn, setSearchedColumn] = useState('');
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
+
   const searchInput = useRef(null);
   const handleSearch = (selectedKeys, confirm, dataIndex) => {
     confirm();
@@ -129,43 +134,9 @@ function Appointments() {
       ),
   });
 
-  const columns = [
-    {
-      title: 'Date',
-      dataIndex: 'date',
-      ...getColumnSearchProps('date'),
-      sorter: (a, b) => Date.parse(a.date) - Date.parse(b.date),
-      sortDirections: ['descend', 'ascend'],
-    },
-    {
-      title: 'Time',
-      dataIndex: 'slot',
-      ...getColumnSearchProps('slot'),
-    },
-    {
-      title: 'Doctor',
-      dataIndex: 'doctorName',
-      ...getColumnSearchProps('doctorName'),
-      sorter: (a, b) => a.doctorName.length - b.doctorName.length,
-      sortDirections: ['descend', 'ascend'],
-    },
-    {
-      title: 'Patient',
-      dataIndex: 'userName',
-      ...getColumnSearchProps('userName'),
-      sorter: (a, b) => a.userName.length - b.userName.length,
-      sortDirections: ['descend', 'ascend'],
-    },
-    {
-      title: 'Booked At',
-      dataIndex: 'bookedOn',
-      ...getColumnSearchProps('bookedOn'),
-      sorter: (a, b) => Date.parse(a.date) - Date.parse(b.date),
-      sortDirections: ['descend', 'ascend'],
-    },
-  ];
-
   const dispatch = useDispatch();
+
+  const user = JSON.parse(localStorage.getItem('user'));
 
   const getData = async () => {
     dispatch(ShowLoader(true));
@@ -175,36 +146,28 @@ function Appointments() {
         const res = await getDoctorAppointments(user.id);
         if (res.success) {
           setAppointments(res.data);
-          console.log(res.data);
-          dispatch(ShowLoader(false));
         } else {
-          dispatch(ShowLoader(false));
           throw new Error(res.message);
         }
       } else if (user.role === 'admin') {
         const res = await getAllAppointments();
         if (res.success) {
           setAppointments(res.data);
-          console.log(res.data);
-          dispatch(ShowLoader(false));
         } else {
-          dispatch(ShowLoader(false));
           throw new Error(res.message);
         }
       } else {
         const res = await getUserAppointments(user.id);
         if (res.success) {
           setAppointments(res.data);
-          console.log(res.data);
-          dispatch(ShowLoader(false));
         } else {
-          dispatch(ShowLoader(false));
           throw new Error(res.message);
         }
       }
     } catch (error) {
-      dispatch(ShowLoader(false));
       message.error(error.message);
+    } finally {
+      dispatch(ShowLoader(false));
     }
   };
 
@@ -213,12 +176,190 @@ function Appointments() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  const onUpdate = async (id, status) => {
+    dispatch(ShowLoader(true));
+    try {
+      const res = await updateAppointmentStatus(id, status);
+      if (res.success) {
+        message.success(res.message);
+        getData();
+      } else throw new Error(res.message);
+    } catch (error) {
+      message.error(error.message);
+    } finally {
+      dispatch(ShowLoader(false));
+    }
+  };
+
+  const dataSource = appointments || [];
+
+  const columns = [
+    {
+      title: 'Date',
+      dataIndex: 'date',
+      key: 'date',
+
+      ...getColumnSearchProps('date'),
+      sorter: (a, b) => Date.parse(a.date) - Date.parse(b.date),
+      sortDirections: ['descend', 'ascend'],
+      showOnResponse: true,
+      showOnDesktop: true,
+    },
+    {
+      title: 'Time',
+      dataIndex: 'slot',
+      key: 'slot',
+
+      ...getColumnSearchProps('slot'),
+      showOnResponse: true,
+      showOnDesktop: true,
+    },
+    {
+      title: 'Doctor',
+      dataIndex: 'doctorName',
+      key: 'doctorName',
+
+      ...getColumnSearchProps('doctorName'),
+      sorter: (a, b) => a.doctorName.length - b.doctorName.length,
+      sortDirections: ['descend', 'ascend'],
+      showOnResponse: true,
+      showOnDesktop: true,
+    },
+    {
+      title: 'Patient',
+      dataIndex: 'userName',
+      key: 'userName',
+
+      ...getColumnSearchProps('userName'),
+      sorter: (a, b) => a.userName.length - b.userName.length,
+      sortDirections: ['descend', 'ascend'],
+      showOnResponse: true,
+      showOnDesktop: true,
+    },
+    {
+      title: 'Booked At',
+      dataIndex: 'bookedOn',
+      key: 'bookedOn',
+
+      ...getColumnSearchProps('bookedOn'),
+      sorter: (a, b) => Date.parse(a.date) - Date.parse(b.date),
+      sortDirections: ['descend', 'ascend'],
+      showOnResponse: true,
+      showOnDesktop: true,
+    },
+    {
+      title: 'Problem',
+      dataIndex: 'problem',
+      key: 'problem',
+
+      ...getColumnSearchProps('problem'),
+      showOnResponse: true,
+      showOnDesktop: true,
+    },
+    {
+      title: 'Status',
+      dataIndex: 'status',
+      key: 'status',
+
+      showOnResponse: true,
+      showOnDesktop: true,
+
+      filters: [
+        {
+          text: 'Pending',
+          value: 'pending',
+        },
+        {
+          text: 'Approved',
+          value: 'approved',
+        },
+        {
+          text: 'Cancelled',
+          value: 'cancelled',
+        },
+      ],
+
+      onFilter: (value, record) => record.status.indexOf(value) === 0,
+      sorter: (a, b) => a.status.length - b.status.length,
+      sortDirections: ['descend', 'ascend'],
+      render: (text, record) => {
+        return text.toUpperCase();
+      },
+    },
+    (user.role === 'doctor' || user.role === 'admin') && {
+      title: 'Actions',
+      dataIndex: 'actions',
+      key: 'actions',
+
+      render: (text, record) => {
+        if (record?.status === 'pending') {
+          return (
+            <div className='flex gap-1'>
+              <span
+                className='underline cursor-pointer action'
+                onClick={() => onUpdate(record.id, 'cancelled')}
+              >
+                Cancel
+              </span>
+              <span
+                className='underline cursor-pointer action'
+                onClick={() => onUpdate(record.id, 'approved')}
+              >
+                Approve
+              </span>
+            </div>
+          );
+        }
+        if (record?.status === 'approved') {
+          return (
+            <div className='flex gap-1'>
+              <span
+                className='underline cursor-pointer action'
+                onClick={() => onUpdate(record.id, 'cancelled')}
+              >
+                Cancel
+              </span>
+            </div>
+          );
+        }
+        if (record?.status === 'cancelled') {
+          return (
+            <div className='flex gap-1'>
+              <span
+                className='underline cursor-pointer action'
+                onClick={() => onUpdate(record.id, 'approved')}
+              >
+                Approve
+              </span>
+            </div>
+          );
+        }
+      },
+      showOnResponse: true,
+      showOnDesktop: true,
+    },
+  ];
+
   return (
     <div>
       <Table
-        columns={columns}
-        dataSource={appointments || []}
-      ></Table>
+        antTableProps={{
+          showHeader: true,
+          columns,
+          dataSource,
+          bordered: true,
+
+          pagination: {
+            current: page,
+            pageSize: pageSize,
+            onChange: (page, pageSize) => {
+              setPage(page);
+              setPageSize(pageSize);
+            },
+          },
+        }}
+        mobileBreakPoint={1060}
+      />
     </div>
   );
 }

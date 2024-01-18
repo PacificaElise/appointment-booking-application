@@ -57,8 +57,9 @@ function Register() {
       }
       dispatch(ShowLoader(false));
     } catch (error) {
-      dispatch(ShowLoader(false));
       message.error(error.message);
+    } finally {
+      dispatch(ShowLoader(false));
     }
   };
 

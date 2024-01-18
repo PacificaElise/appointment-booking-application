@@ -110,10 +110,10 @@ function DoctorForm() {
       } else {
         throw new Error(response.message);
       }
-      dispatch(ShowLoader(false));
     } catch (error) {
-      dispatch(ShowLoader(false));
       message.error(error.message);
+    } finally {
+      dispatch(ShowLoader(false));
     }
   };
 
@@ -126,10 +126,10 @@ function DoctorForm() {
       if (res.success) {
         setApplied(true);
       }
-      dispatch(ShowLoader(false));
     } catch (error) {
-      dispatch(ShowLoader(false));
       message.error(error.message);
+    } finally {
+      dispatch(ShowLoader(false));
     }
   };
 
@@ -481,12 +481,11 @@ function DoctorForm() {
       </Form>
     </section>
   ) : (
-    <div className='flex flex-col items-center gap-2 p-2'>
+    <div className='flex flex-col items-center justify-center gap-2 p-2'>
       <h3 className='text-secondary'>
         You have already applied for this account, please, wait for the admin to
         approve your request.
       </h3>
-      <button></button>
     </div>
   );
 }

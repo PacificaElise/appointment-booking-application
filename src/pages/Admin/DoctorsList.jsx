@@ -1,11 +1,13 @@
 import { useState, useEffect, useRef } from 'react';
 import { useDispatch } from 'react-redux';
 import { ShowLoader } from '../../redux/loaderSlice';
-import { Button, Input, Space, Table, message } from 'antd';
+import { Button, Input, Space, message } from 'antd';
 import { SearchOutlined } from '@ant-design/icons';
 import Highlighter from 'react-highlight-words';
 
 import { getDoctors, updateDoctor } from '../../requests/doctors';
+
+import Table from 'ant-responsive-table';
 
 function DoctorsList() {
   const [doctors, setDoctors] = useState([]);
@@ -19,10 +21,10 @@ function DoctorsList() {
       if (res.success) {
         setDoctors(res.data);
       } else throw new Error(res.message);
-      dispatch(ShowLoader(false));
     } catch (error) {
-      dispatch(ShowLoader(false));
       message.error(error.message);
+    } finally {
+      dispatch(ShowLoader(false));
     }
   };
 
@@ -34,11 +36,10 @@ function DoctorsList() {
         message.success(res.message);
         getData();
       } else throw new Error(res.message);
-
-      dispatch(ShowLoader(false));
     } catch (error) {
-      dispatch(ShowLoader(false));
       message.error(error.message);
+    } finally {
+      dispatch(ShowLoader(false));
     }
   };
 
@@ -49,6 +50,10 @@ function DoctorsList() {
 
   const [searchText, setSearchText] = useState('');
   const [searchedColumn, setSearchedColumn] = useState('');
+
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
+
   const searchInput = useRef(null);
   const handleSearch = (selectedKeys, confirm, dataIndex) => {
     confirm();
@@ -166,20 +171,40 @@ function DoctorsList() {
     {
       title: 'First name',
       dataIndex: 'firstName',
+      key: 'firstName',
+
       ...getColumnSearchProps('firstName'),
-      sorter: (a, b) => a.firstName.length - b.firstName.length,
+      sorter: (a, b) =>
+        a.firstName.localeCompare(b.firstName, undefined, {
+          numeric: true,
+          sensitivity: 'base',
+        }),
       sortDirections: ['descend', 'ascend'],
+
+      showOnResponse: true,
+      showOnDesktop: true,
     },
     {
       title: 'Last name',
       dataIndex: 'lastName',
+      key: 'lastName',
+
       ...getColumnSearchProps('lastName'),
-      sorter: (a, b) => a.lastName.length - b.lastName.length,
+      sorter: (a, b) =>
+        a.lastName.localeCompare(b.lastName, undefined, {
+          numeric: true,
+          sensitivity: 'base',
+        }),
       sortDirections: ['descend', 'ascend'],
+
+      showOnResponse: true,
+      showOnDesktop: true,
     },
     {
       title: 'Email',
       dataIndex: 'email',
+      key: 'email',
+
       ...getColumnSearchProps('email'),
       sorter: (a, b) =>
         a.email.localeCompare(b.email, undefined, {
@@ -187,24 +212,50 @@ function DoctorsList() {
           sensitivity: 'base',
         }),
       sortDirections: ['descend', 'ascend'],
+
+      showOnResponse: true,
+      showOnDesktop: true,
     },
     {
       title: 'Phone',
       dataIndex: 'phone',
+      key: 'phone',
+
       ...getColumnSearchProps('phone'),
-      sorter: (a, b) => a.phone.length - b.phone.length,
+      sorter: (a, b) =>
+        a.phone.localeCompare(b.phone, undefined, {
+          numeric: true,
+          sensitivity: 'base',
+        }),
       sortDirections: ['descend', 'ascend'],
+
+      showOnResponse: true,
+      showOnDesktop: true,
     },
     {
       title: 'Speciality',
       dataIndex: 'speciality',
+      key: 'speciality',
+
       ...getColumnSearchProps('speciality'),
-      sorter: (a, b) => a.speciality.length - b.speciality.length,
+      sorter: (a, b) =>
+        a.speciality.localeCompare(b.speciality, undefined, {
+          numeric: true,
+          sensitivity: 'base',
+        }),
       sortDirections: ['descend', 'ascend'],
+
+      showOnResponse: true,
+      showOnDesktop: true,
     },
     {
       title: 'Status',
       dataIndex: 'status',
+      key: 'status',
+
+      showOnResponse: true,
+      showOnDesktop: true,
+
       filters: [
         {
           text: 'Pending',
@@ -229,7 +280,11 @@ function DoctorsList() {
       ],
 
       onFilter: (value, record) => record.status.indexOf(value) === 0,
-      sorter: (a, b) => a.status.length - b.status.length,
+      sorter: (a, b) =>
+        a.status.localeCompare(b.status, undefined, {
+          numeric: true,
+          sensitivity: 'base',
+        }),
       sortDirections: ['descend', 'ascend'],
       render: (text, record) => {
         return text.toUpperCase();
@@ -238,8 +293,10 @@ function DoctorsList() {
     {
       title: 'Actions',
       dataIndex: 'actions',
+      key: 'actions',
+
       render: (text, record) => {
-        if (record.status === 'pending' || record.status === 'unblocked') {
+        if (record?.status === 'pending' || record?.status === 'unblocked') {
           return (
             <div className='flex gap-1'>
               <span
@@ -258,7 +315,7 @@ function DoctorsList() {
           );
         }
 
-        if (record.status === 'rejected') {
+        if (record?.status === 'rejected') {
           return (
             <div className='flex gap-1'>
               <span
@@ -271,7 +328,7 @@ function DoctorsList() {
           );
         }
 
-        if (record.status === 'approved') {
+        if (record?.status === 'approved') {
           return (
             <div className='flex gap-1'>
               <span
@@ -284,7 +341,7 @@ function DoctorsList() {
           );
         }
 
-        if (record.status === 'blocked') {
+        if (record?.status === 'blocked') {
           return (
             <div className='flex gap-1'>
               <span
@@ -297,15 +354,34 @@ function DoctorsList() {
           );
         }
       },
+      showOnResponse: true,
+      showOnDesktop: true,
     },
   ];
+
+  const dataSource = doctors || [];
 
   return (
     <div>
       <Table
-        columns={columns}
-        dataSource={doctors}
-      ></Table>
+        antTableProps={{
+          rowKey: (record) => record.key,
+          showHeader: true,
+          columns,
+          dataSource,
+          bordered: true,
+
+          pagination: {
+            current: page,
+            pageSize: pageSize,
+            onChange: (page, pageSize) => {
+              setPage(page);
+              setPageSize(pageSize);
+            },
+          },
+        }}
+        mobileBreakPoint={985}
+      />
     </div>
   );
 }

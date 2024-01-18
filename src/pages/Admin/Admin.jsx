@@ -35,10 +35,10 @@ function Admin() {
         setIsAdmin(false);
         throw new Error('You are not an admin');
       }
-      dispatch(ShowLoader(false));
     } catch (error) {
-      dispatch(ShowLoader(false));
       message.error(error.message);
+    } finally {
+      dispatch(ShowLoader(false));
     }
   };
 

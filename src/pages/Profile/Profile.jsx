@@ -1,5 +1,6 @@
 import { Tabs } from 'antd';
 import Appointments from './Appointments';
+import ProfileInfo from './ProfileInfo';
 
 const items = [
   {
@@ -10,6 +11,7 @@ const items = [
   {
     key: '2',
     label: 'Profile',
+    children: <ProfileInfo />,
   },
 ];
 

@@ -42,6 +42,10 @@ body {
   align-items: center;
 }
 
+.self-end {
+  align-self: flex-end;
+}
+
 .wrap {
   flex-wrap: wrap;
 }
@@ -289,6 +293,10 @@ textarea:hover,
   cursor: pointer;
 }
 
+.cursor-grab {
+  cursor: grab;
+}
+
 .gap-small {
   gap: 5px;
 }
@@ -402,6 +410,41 @@ hr {
   width: 400px;
 }
 
+.ant-card-body {
+  padding: 15px !important;
+  border: 1px solid #979696;
+}
+
+.ant-card-body > div > div > div > b {
+  font-weight: 700;
+}
+
+.ant-table-cell {
+  padding: 12px 12px !important;
+}
+
+.ant-card-body > div {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: flex-start;
+}
+
+.ant-card-body > div > div {
+  flex-direction: row;
+  width: 600px;
+  gap: 20px;
+  align-items: center;
+}
+
+.ant-card-body > div > div > div {
+  text-align: left !important;
+}
+
+.ant-divider-horizontal {
+  margin: 5px 0px;
+}
+
 @media screen and (max-width: 865px) {
   .col {
     width: 300px;
@@ -411,6 +454,10 @@ hr {
 @media screen and (max-width: 665px) {
   .col {
     width: 240px;
+  }
+
+  .ant-card-body > div > div {
+    width: 400px;
   }
 }
 
@@ -469,5 +516,9 @@ hr {
   .ant-tabs-tab-btn {
     font-size: 14px;
     font-weight: 500;
+  }
+
+  .ant-card-body > div > div {
+    width: 300px;
   }
 }
