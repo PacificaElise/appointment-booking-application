@@ -16,7 +16,7 @@ export const bookAppointment = async (payload) => {
   }
 };
 
-export const getDoctorAppointments = async (doctorId, date) => {
+export const getDoctorAppointmentsOnDate = async (doctorId, date) => {
   try {
     const querySnapshot = await getDocs(
       query(
@@ -30,6 +30,64 @@ export const getDoctorAppointments = async (doctorId, date) => {
     return {
       success: true,
       data,
+    };
+  } catch (error) {
+    return {
+      success: false,
+      message: error.message,
+    };
+  }
+};
+
+export const getDoctorAppointments = async (doctorId) => {
+  try {
+    const querySnapshot = await getDocs(
+      query(
+        collection(database, 'appointments'),
+        where('doctorId', '==', doctorId)
+      )
+    );
+    const data = [];
+    querySnapshot.forEach((doc) => data.push(doc.data()));
+    return {
+      success: true,
+      data,
+    };
+  } catch (error) {
+    return {
+      success: false,
+      message: error.message,
+    };
+  }
+};
+
+export const getUserAppointments = async (userId) => {
+  try {
+    const querySnapshot = await getDocs(
+      query(collection(database, 'appointments'), where('userId', '==', userId))
+    );
+    const data = [];
+    querySnapshot.forEach((doc) => data.push(doc.data()));
+    return {
+      success: true,
+      data,
+    };
+  } catch (error) {
+    return {
+      success: false,
+      message: error.message,
+    };
+  }
+};
+
+export const getAllAppointments = async () => {
+  try {
+    const appointments = await getDocs(collection(database, 'appointments'));
+    const data = [];
+    appointments.forEach((doc) => data.push(doc.data()));
+    return {
+      success: true,
+      data: data,
     };
   } catch (error) {
     return {

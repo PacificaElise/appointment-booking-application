@@ -9,13 +9,13 @@ import { getUserById } from '../../requests/users';
 const items = [
   {
     key: '1',
-    label: 'Users',
-    children: <UsersList />,
+    label: 'Doctors',
+    children: <DoctorsList />,
   },
   {
     key: '2',
-    label: 'Doctors',
-    children: <DoctorsList />,
+    label: 'Users',
+    children: <UsersList />,
   },
 ];
 

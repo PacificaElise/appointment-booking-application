@@ -29,6 +29,8 @@ function Home() {
     }
   };
 
+  const user = JSON.parse(localStorage.getItem('user'));
+
   useEffect(
     () => {
       getData();
@@ -47,12 +49,21 @@ function Home() {
           allowClear
         />
 
-        <button
-          className='contained-btn my-1 p-1'
-          onClick={() => navigate('/apply-doctor')}
-        >
-          Apply Doctor
-        </button>
+        {user.role === 'admin' ? (
+          <button
+            className='contained-btn my-1 p-1'
+            onClick={() => navigate('/admin')}
+          >
+            Approve Doctor
+          </button>
+        ) : (
+          <button
+            className='contained-btn my-1 p-1'
+            onClick={() => navigate('/apply-doctor')}
+          >
+            Apply Doctor
+          </button>
+        )}
       </div>
       <Row
         gutter={[16, 16]}

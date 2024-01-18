@@ -244,7 +244,14 @@ function DoctorForm() {
                 { whitespace: true },
               ]}
             >
-              <Textarea />
+              <Textarea
+                showCount
+                maxLength={300}
+                style={{
+                  height: 100,
+                  resize: 'none',
+                }}
+              />
             </Form.Item>
           </Col>
         </Row>

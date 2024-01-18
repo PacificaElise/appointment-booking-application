@@ -7,11 +7,11 @@
   font-family: 'Montserrat', Verdana, sans-serif !important;
   font-size: 16px;
   font-weight: 500;
-  color: #363636;
 }
 
 body {
   background-color: #e4e4e4;
+  color: #363636;
 }
 
 .bold {
@@ -347,14 +347,6 @@ textarea:hover,
 
 .anticon-check-circle svg {
   fill: #205e61;
-}
-
-.ant-input-password-icon svg {
-  fill: #979696;
-}
-
-.ant-picker-cell-disabled .ant-picker-cell-inner {
-  color: #979696;
 }
 
 .col {

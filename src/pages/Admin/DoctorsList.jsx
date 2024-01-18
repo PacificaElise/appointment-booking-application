@@ -181,7 +181,11 @@ function DoctorsList() {
       title: 'Email',
       dataIndex: 'email',
       ...getColumnSearchProps('email'),
-      sorter: (a, b) => a.email.length - b.email.length,
+      sorter: (a, b) =>
+        a.email.localeCompare(b.email, undefined, {
+          numeric: true,
+          sensitivity: 'base',
+        }),
       sortDirections: ['descend', 'ascend'],
     },
     {

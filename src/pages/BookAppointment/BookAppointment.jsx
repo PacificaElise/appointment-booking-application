@@ -2,27 +2,38 @@ import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { ShowLoader } from '../../redux/loaderSlice';
-import { message, DatePicker } from 'antd';
+import { message, DatePicker, Input } from 'antd';
 import { getDoctorById } from '../../requests/doctors';
 import moment from 'moment';
 import { useNavigate } from 'react-router-dom';
-import { bookAppointment, getDoctorAppointments } from '../../requests/books';
+import {
+  bookAppointment,
+  getDoctorAppointmentsOnDate,
+} from '../../requests/books';
 import dayjs from 'dayjs';
 
 const disabledDate = (current) => {
   return current && current < dayjs().endOf('day');
 };
 
+const { TextArea } = Input;
+
 function BookAppointment() {
   const [date, setDate] = useState('');
   const [doctor, setDoctor] = useState(null);
   const [selectedSlot, setSelectedSlot] = useState('');
   const [bookedSlots, setBookedSlots] = useState([]);
+  const [problem, setProblem] = useState('');
 
   const navigate = useNavigate();
 
   const onChange = (date, dateString) => {
+    setSelectedSlot('');
     setDate(dateString);
+  };
+
+  const onChangeReason = (e) => {
+    setProblem(e.target.value);
   };
 
   const { id } = useParams();
@@ -52,34 +63,38 @@ function BookAppointment() {
         </h3>
       );
     }
-    let startTime = moment(doctor.startTime, 'HH:mm');
-    let endTime = moment(doctor.endTime, 'HH:mm');
+    let startTime = moment(doctor.startTime, 'hh:mm');
+    let endTime = moment(doctor.endTime, 'hh:mm');
     let slotDuration = 60; // im minutes
     let slots = [];
     while (startTime < endTime) {
-      if (
-        !bookedSlots.find((slot) => slot.slot === startTime.format('HH:mm'))
-      ) {
-        slots.push(startTime.format('HH:mm'));
-      }
+      slots.push(startTime.format('hh:mm'));
       startTime.add(slotDuration, 'minutes');
     }
     return slots.map((slot) => {
+      const isBooked = bookedSlots?.find(
+        (bookedSlot) => bookedSlot.slot === slot && slot.status !== 'cancelled'
+      );
       return (
         <div
-          className='bg-white cursor-pointer slot p-1'
+          className='bg-white slot p-1'
           key={slot}
-          onClick={() => setSelectedSlot(slot)}
+          onClick={() => {
+            setSelectedSlot(slot);
+          }}
           style={{
             border:
               selectedSlot === slot ? '2px solid #205e61' : '1px solid #979696',
+            backgroundColor: isBooked ? '#d6d6d6' : 'fff',
+            pointerEvents: isBooked ? 'none' : 'auto',
+            cursor: isBooked ? 'not-allowed' : 'pointer',
           }}
         >
           <span>
-            {moment(slot, 'HH:mm A').format('HH:mm A')} - {''}
-            {moment(slot, 'HH:mm A')
+            {moment(slot, 'hh:mm').format('hh:mm a')} - {''}
+            {moment(slot, 'hh:mm')
               .add(slotDuration, 'minutes')
-              .format('HH:mm A')}
+              .format('hh:mm a')}
           </span>
         </div>
       );
@@ -96,7 +111,9 @@ function BookAppointment() {
         slot: selectedSlot,
         doctorName: `${doctor.firstName} ${doctor.lastName}`,
         userName: JSON.parse(localStorage.getItem('user')).name,
-        bookedOn: moment().format('DD-MM-YYYY HH:mm A'),
+        bookedOn: moment().format('DD-MM-YYYY hh:mm a'),
+        problem,
+        status: 'pending',
       };
       const res = await bookAppointment(payload);
       if (res.success) {
@@ -113,7 +130,7 @@ function BookAppointment() {
   const getBookedSlots = async () => {
     dispatch(ShowLoader(true));
     try {
-      const res = await getDoctorAppointments(id, date);
+      const res = await getDoctorAppointmentsOnDate(id, date);
       if (res.success) {
         setBookedSlots(res.data);
       } else throw new Error(res.message);
@@ -181,8 +198,33 @@ function BookAppointment() {
             </div>
           </div>
         </div>
-        <div className='flex gap-2 wrap my-2'>{date && getSlotsData()}</div>
-        <p className='flex gap-3 wrap'>
+        <div className='flex gap-2 wrap my-2'>{date && getSlotsData()}</div>{' '}
+        {selectedSlot && (
+          <TextArea
+            className='w-400'
+            showCount
+            maxLength={300}
+            onChange={onChangeReason}
+            placeholder='Enter your problem here'
+            style={{
+              height: 120,
+              resize: 'none',
+              padding: 10,
+              marginTop: 10,
+              marginBottom: 20,
+            }}
+          />
+        )}
+        <p className='flex gap-2 wrap'>
+          {selectedSlot && (
+            <button
+              className='contained-btn p-1 w-200'
+              onClick={onBook}
+            >
+              Book appointment
+            </button>
+          )}
+
           <button
             className='canceled-btn p-1 w-200'
             onClick={() => {
@@ -192,14 +234,6 @@ function BookAppointment() {
           >
             Cancel
           </button>
-          {selectedSlot && (
-            <button
-              className='contained-btn p-1 w-200'
-              onClick={onBook}
-            >
-              Book appointment
-            </button>
-          )}
         </p>
       </section>
     )

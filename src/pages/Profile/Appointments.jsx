@@ -1,35 +1,17 @@
-import { useState, useEffect, useRef } from 'react';
-import { useDispatch } from 'react-redux';
-import { ShowLoader } from '../../redux/loaderSlice';
+import { useState, useRef, useEffect } from 'react';
 import { Button, Input, Space, Table, message } from 'antd';
 import { SearchOutlined } from '@ant-design/icons';
 import Highlighter from 'react-highlight-words';
+import { useDispatch } from 'react-redux';
+import { ShowLoader } from '../../redux/loaderSlice';
+import {
+  getAllAppointments,
+  getDoctorAppointments,
+  getUserAppointments,
+} from '../../requests/books';
 
-import { getUsers } from '../../requests/users';
-
-function UsersList() {
-  const [users, setUsers] = useState([]);
-
-  const dispatch = useDispatch();
-
-  const getData = async () => {
-    dispatch(ShowLoader(true));
-    try {
-      const res = await getUsers();
-      if (res.success) {
-        setUsers(res.data);
-      } else throw new Error(res.message);
-      dispatch(ShowLoader(false));
-    } catch (error) {
-      dispatch(ShowLoader(false));
-      message.error(error.message);
-    }
-  };
-
-  useEffect(() => {
-    getData();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+function Appointments() {
+  const [appointments, setAppointments] = useState([]);
 
   const [searchText, setSearchText] = useState('');
   const [searchedColumn, setSearchedColumn] = useState('');
@@ -43,6 +25,7 @@ function UsersList() {
     clearFilters();
     setSearchText('');
   };
+
   const getColumnSearchProps = (dataIndex) => ({
     filterDropdown: ({
       setSelectedKeys,
@@ -148,66 +131,96 @@ function UsersList() {
 
   const columns = [
     {
-      title: 'ID',
-      dataIndex: 'id',
-    },
-    {
-      title: 'Name',
-      dataIndex: 'name',
-      ...getColumnSearchProps('name'),
-      sorter: (a, b) =>
-        a.name.localeCompare(b.name, undefined, {
-          numeric: true,
-          sensitivity: 'base',
-        }),
+      title: 'Date',
+      dataIndex: 'date',
+      ...getColumnSearchProps('date'),
+      sorter: (a, b) => Date.parse(a.date) - Date.parse(b.date),
       sortDirections: ['descend', 'ascend'],
     },
     {
-      title: 'Email',
-      dataIndex: 'email',
-      ...getColumnSearchProps('email'),
-      sorter: (a, b) =>
-        a.email.localeCompare(b.email, undefined, {
-          numeric: true,
-          sensitivity: 'base',
-        }),
+      title: 'Time',
+      dataIndex: 'slot',
+      ...getColumnSearchProps('slot'),
+    },
+    {
+      title: 'Doctor',
+      dataIndex: 'doctorName',
+      ...getColumnSearchProps('doctorName'),
+      sorter: (a, b) => a.doctorName.length - b.doctorName.length,
       sortDirections: ['descend', 'ascend'],
     },
     {
-      title: 'Role',
-      dataIndex: 'role',
-      filters: [
-        {
-          text: 'Doctor',
-          value: 'doctor',
-        },
-        {
-          text: 'User',
-          value: 'user',
-        },
-        {
-          text: 'Admin',
-          value: 'admin',
-        },
-      ],
-
-      onFilter: (value, record) => record.role.indexOf(value) === 0,
-      sorter: (a, b) => a.role.length - b.role.length,
+      title: 'Patient',
+      dataIndex: 'userName',
+      ...getColumnSearchProps('userName'),
+      sorter: (a, b) => a.userName.length - b.userName.length,
       sortDirections: ['descend', 'ascend'],
-      render: (text, record) => {
-        return text.toUpperCase();
-      },
+    },
+    {
+      title: 'Booked At',
+      dataIndex: 'bookedOn',
+      ...getColumnSearchProps('bookedOn'),
+      sorter: (a, b) => Date.parse(a.date) - Date.parse(b.date),
+      sortDirections: ['descend', 'ascend'],
     },
   ];
+
+  const dispatch = useDispatch();
+
+  const getData = async () => {
+    dispatch(ShowLoader(true));
+    const user = JSON.parse(localStorage.getItem('user'));
+    try {
+      if (user.role === 'doctor') {
+        const res = await getDoctorAppointments(user.id);
+        if (res.success) {
+          setAppointments(res.data);
+          console.log(res.data);
+          dispatch(ShowLoader(false));
+        } else {
+          dispatch(ShowLoader(false));
+          throw new Error(res.message);
+        }
+      } else if (user.role === 'admin') {
+        const res = await getAllAppointments();
+        if (res.success) {
+          setAppointments(res.data);
+          console.log(res.data);
+          dispatch(ShowLoader(false));
+        } else {
+          dispatch(ShowLoader(false));
+          throw new Error(res.message);
+        }
+      } else {
+        const res = await getUserAppointments(user.id);
+        if (res.success) {
+          setAppointments(res.data);
+          console.log(res.data);
+          dispatch(ShowLoader(false));
+        } else {
+          dispatch(ShowLoader(false));
+          throw new Error(res.message);
+        }
+      }
+    } catch (error) {
+      dispatch(ShowLoader(false));
+      message.error(error.message);
+    }
+  };
+
+  useEffect(() => {
+    getData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <div>
       <Table
         columns={columns}
-        dataSource={users}
+        dataSource={appointments || []}
       ></Table>
     </div>
   );
 }
 
-export default UsersList;
+export default Appointments;
