@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useDispatch } from 'react-redux';
 import { ShowLoader } from '../../redux/loaderSlice';
-import { Button, Input, Space, message, Modal } from 'antd';
+import { Button, Input, Space, message, Modal, Table } from 'antd';
 import {
   SearchOutlined,
   DeleteOutlined,
@@ -10,8 +10,6 @@ import {
 import Highlighter from 'react-highlight-words';
 
 import { deleteDoctor, getDoctors, updateDoctor } from '../../requests/doctors';
-
-import Table from 'ant-responsive-table';
 import { deleteUser } from '../../requests/users';
 
 function DoctorsList() {
@@ -238,7 +236,6 @@ function DoctorsList() {
       title: 'First name',
       dataIndex: 'firstName',
       key: 'firstName',
-
       ...getColumnSearchProps('firstName'),
       sorter: (a, b) =>
         a.firstName.localeCompare(b.firstName, undefined, {
@@ -246,9 +243,6 @@ function DoctorsList() {
           sensitivity: 'base',
         }),
       sortDirections: ['descend', 'ascend'],
-
-      showOnResponse: true,
-      showOnDesktop: true,
     },
     {
       title: 'Last name',
@@ -262,9 +256,6 @@ function DoctorsList() {
           sensitivity: 'base',
         }),
       sortDirections: ['descend', 'ascend'],
-
-      showOnResponse: true,
-      showOnDesktop: true,
     },
     {
       title: 'Email',
@@ -278,9 +269,6 @@ function DoctorsList() {
           sensitivity: 'base',
         }),
       sortDirections: ['descend', 'ascend'],
-
-      showOnResponse: true,
-      showOnDesktop: true,
     },
     {
       title: 'Phone',
@@ -294,9 +282,6 @@ function DoctorsList() {
           sensitivity: 'base',
         }),
       sortDirections: ['descend', 'ascend'],
-
-      showOnResponse: true,
-      showOnDesktop: true,
     },
     {
       title: 'Speciality',
@@ -310,17 +295,11 @@ function DoctorsList() {
           sensitivity: 'base',
         }),
       sortDirections: ['descend', 'ascend'],
-
-      showOnResponse: true,
-      showOnDesktop: true,
     },
     {
       title: 'Status',
       dataIndex: 'status',
       key: 'status',
-
-      showOnResponse: true,
-      showOnDesktop: true,
 
       filters: [
         {
@@ -357,14 +336,16 @@ function DoctorsList() {
       },
     },
     {
-      title: 'Confirmation',
+      title: 'Confir-mation',
       dataIndex: 'confirmation',
       key: 'confirmation',
+      fixed: 'right',
+      width: 50,
 
-      render: (text, record) => {
-        if (record?.status === 'pending' || record?.status === 'unblocked') {
-          return (
-            <div className='flex gap-1'>
+      render: (text, record) => (
+        <div className='flex gap-1 wrap'>
+          {(record?.status === 'pending' || record?.status === 'unblocked') && (
+            <>
               <span
                 className='underline cursor-pointer action'
                 onClick={() => changeStatus({ ...record, status: 'rejected' })}
@@ -377,56 +358,41 @@ function DoctorsList() {
               >
                 Approve
               </span>
-            </div>
-          );
-        }
-
-        if (record?.status === 'rejected') {
-          return (
-            <div className='flex gap-1'>
-              <span
-                className='underline cursor-pointer action'
-                onClick={() => changeStatus({ ...record, status: 'approved' })}
-              >
-                Approve
-              </span>
-            </div>
-          );
-        }
-
-        if (record?.status === 'approved') {
-          return (
-            <div className='flex gap-1'>
-              <span
-                className='underline cursor-pointer action'
-                onClick={() => changeStatus({ ...record, status: 'blocked' })}
-              >
-                Block
-              </span>
-            </div>
-          );
-        }
-
-        if (record?.status === 'blocked') {
-          return (
-            <div className='flex gap-1'>
-              <span
-                className='underline cursor-pointer action'
-                onClick={() => changeStatus({ ...record, status: 'unblocked' })}
-              >
-                Unblock
-              </span>
-            </div>
-          );
-        }
-      },
-      showOnResponse: true,
-      showOnDesktop: true,
+            </>
+          )}
+          {record?.status === 'rejected' && (
+            <span
+              className='underline cursor-pointer action'
+              onClick={() => changeStatus({ ...record, status: 'approved' })}
+            >
+              Approve
+            </span>
+          )}
+          {record?.status === 'approved' && (
+            <span
+              className='underline cursor-pointer action'
+              onClick={() => changeStatus({ ...record, status: 'blocked' })}
+            >
+              Block
+            </span>
+          )}
+          {record?.status === 'blocked' && (
+            <span
+              className='underline cursor-pointer action'
+              onClick={() => changeStatus({ ...record, status: 'unblocked' })}
+            >
+              Unblock
+            </span>
+          )}
+        </div>
+      ),
     },
     {
-      title: 'Actions',
+      title: 'Ac-tions',
       dataIndex: 'actions',
       key: 'actions',
+      fixed: 'right',
+      width: 50,
 
       showOnResponse: true,
       showOnDesktop: true,
@@ -451,23 +417,20 @@ function DoctorsList() {
   return (
     <div>
       <Table
-        antTableProps={{
-          rowKey: (record) => record.key,
-          showHeader: true,
-          columns,
-          dataSource,
-          bordered: true,
-
-          pagination: {
-            current: page,
-            pageSize: pageSize,
-            onChange: (page, pageSize) => {
-              setPage(page);
-              setPageSize(pageSize);
-            },
+        rowKey={(record) => record.key}
+        showHeader={true}
+        columns={columns}
+        dataSource={dataSource}
+        bordered={true}
+        scroll={{ x: true }}
+        pagination={{
+          current: page,
+          pageSize: pageSize,
+          onChange: (page, pageSize) => {
+            setPage(page);
+            setPageSize(pageSize);
           },
         }}
-        mobileBreakPoint={1070}
       />
       <Modal
         title="Edit doctor's information"

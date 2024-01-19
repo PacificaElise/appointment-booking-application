@@ -1,14 +1,13 @@
 import { useState, useEffect, useRef } from 'react';
 import { useDispatch } from 'react-redux';
 import { ShowLoader } from '../../redux/loaderSlice';
-import { Button, Input, Space, message, Modal } from 'antd';
+import { Button, Input, Space, message, Modal, Table } from 'antd';
 import {
   SearchOutlined,
   EditOutlined,
   DeleteOutlined,
 } from '@ant-design/icons';
 import Highlighter from 'react-highlight-words';
-import Table from 'ant-responsive-table';
 
 import { deleteUser, getUsers, updateUser } from '../../requests/users';
 import { deleteDoctor } from '../../requests/doctors';
@@ -203,20 +202,9 @@ function UsersList() {
 
   const columns = [
     {
-      title: 'ID',
-      dataIndex: 'id',
-      key: 'id',
-
-      showOnResponse: true,
-      showOnDesktop: true,
-    },
-    {
       title: 'Name',
       dataIndex: 'name',
       key: 'name',
-
-      showOnResponse: true,
-      showOnDesktop: true,
 
       ...getColumnSearchProps('name'),
       sorter: (a, b) =>
@@ -227,12 +215,14 @@ function UsersList() {
       sortDirections: ['descend', 'ascend'],
     },
     {
+      title: 'ID',
+      dataIndex: 'id',
+      key: 'id',
+    },
+    {
       title: 'Email',
       dataIndex: 'email',
       key: 'email',
-
-      showOnResponse: true,
-      showOnDesktop: true,
 
       ...getColumnSearchProps('email'),
       sorter: (a, b) =>
@@ -246,9 +236,6 @@ function UsersList() {
       title: 'Role',
       dataIndex: 'role',
       key: 'role',
-
-      showOnResponse: true,
-      showOnDesktop: true,
 
       filters: [
         {
@@ -277,12 +264,11 @@ function UsersList() {
       },
     },
     {
-      title: 'Actions',
+      title: 'Ac-tions',
       dataIndex: 'actions',
       key: 'actions',
-
-      showOnResponse: true,
-      showOnDesktop: true,
+      fixed: 'right',
+      width: 50,
 
       render: (text, record) => {
         return (
@@ -335,23 +321,20 @@ function UsersList() {
   return (
     <div>
       <Table
-        antTableProps={{
-          rowKey: (record) => record.id,
-          showHeader: true,
-          columns,
-          dataSource,
-          bordered: true,
-
-          pagination: {
-            current: page,
-            pageSize: pageSize,
-            onChange: (page, pageSize) => {
-              setPage(page);
-              setPageSize(pageSize);
-            },
+        rowKey={(record) => record.key}
+        showHeader={true}
+        columns={columns}
+        dataSource={dataSource}
+        bordered={true}
+        scroll={{ x: true }}
+        pagination={{
+          current: page,
+          pageSize: pageSize,
+          onChange: (page, pageSize) => {
+            setPage(page);
+            setPageSize(pageSize);
           },
         }}
-        mobileBreakPoint={800}
       />
 
       <Modal

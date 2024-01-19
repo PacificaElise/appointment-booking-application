@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { Button, Input, Space, message, Modal } from 'antd';
+import { Button, Input, Space, message, Modal, Table } from 'antd';
 import {
   SearchOutlined,
   DeleteOutlined,
@@ -15,7 +15,6 @@ import {
   getUserAppointments,
   updateAppointmentStatus,
 } from '../../requests/books';
-import Table from 'ant-responsive-table';
 
 function Appointments() {
   const [appointments, setAppointments] = useState([]);
@@ -222,8 +221,6 @@ function Appointments() {
       ...getColumnSearchProps('date'),
       sorter: (a, b) => Date.parse(a.date) - Date.parse(b.date),
       sortDirections: ['descend', 'ascend'],
-      showOnResponse: true,
-      showOnDesktop: true,
     },
     {
       title: 'Time',
@@ -231,8 +228,6 @@ function Appointments() {
       key: 'slot',
 
       ...getColumnSearchProps('slot'),
-      showOnResponse: true,
-      showOnDesktop: true,
     },
     {
       title: 'Doctor',
@@ -242,8 +237,6 @@ function Appointments() {
       ...getColumnSearchProps('doctorName'),
       sorter: (a, b) => a.doctorName.length - b.doctorName.length,
       sortDirections: ['descend', 'ascend'],
-      showOnResponse: true,
-      showOnDesktop: true,
     },
     {
       title: 'Patient',
@@ -253,8 +246,6 @@ function Appointments() {
       ...getColumnSearchProps('userName'),
       sorter: (a, b) => a.userName.length - b.userName.length,
       sortDirections: ['descend', 'ascend'],
-      showOnResponse: true,
-      showOnDesktop: true,
     },
     {
       title: 'Booked At',
@@ -264,8 +255,6 @@ function Appointments() {
       ...getColumnSearchProps('bookedOn'),
       sorter: (a, b) => Date.parse(a.date) - Date.parse(b.date),
       sortDirections: ['descend', 'ascend'],
-      showOnResponse: true,
-      showOnDesktop: true,
     },
     {
       title: 'Problem',
@@ -273,16 +262,11 @@ function Appointments() {
       key: 'problem',
 
       ...getColumnSearchProps('problem'),
-      showOnResponse: true,
-      showOnDesktop: true,
     },
     {
       title: 'Status',
       dataIndex: 'status',
       key: 'status',
-
-      showOnResponse: true,
-      showOnDesktop: true,
 
       filters: [
         {
@@ -308,62 +292,58 @@ function Appointments() {
     },
 
     (user.role === 'doctor' || user.role === 'admin') && {
-      title: 'Confirmation',
+      title: 'Confir-mation',
       dataIndex: 'confirmation',
       key: 'confirmation',
+      fixed: 'right',
+      width: 50,
 
-      showOnResponse: true,
-      showOnDesktop: true,
-
-      render: (text, record, indexs) => {
-        return (
-          <div className='flex gap-1 justify-center'>
-            {record?.status === 'pending' && (
-              <>
-                <span
-                  className='underline cursor-pointer action'
-                  onClick={() => onUpdate(record?.id, 'cancelled')}
-                >
-                  Cancel
-                </span>
-                <span
-                  className='underline cursor-pointer action'
-                  onClick={() => onUpdate(record?.id, 'approved')}
-                >
-                  Approve
-                </span>
-              </>
-            )}
-            {record?.status === 'approved' && (
+      render: (text, record) => (
+        <div className='flex gap-1 justify-center wrap'>
+          {record?.status === 'pending' && (
+            <>
               <span
                 className='underline cursor-pointer action'
                 onClick={() => onUpdate(record?.id, 'cancelled')}
               >
                 Cancel
               </span>
-            )}
-            {record?.status === 'cancelled' && (
               <span
                 className='underline cursor-pointer action'
                 onClick={() => onUpdate(record?.id, 'approved')}
               >
                 Approve
               </span>
-            )}
-          </div>
-        );
-      },
+            </>
+          )}
+          {record?.status === 'approved' && (
+            <span
+              className='underline cursor-pointer action'
+              onClick={() => onUpdate(record?.id, 'cancelled')}
+            >
+              Cancel
+            </span>
+          )}
+          {record?.status === 'cancelled' && (
+            <span
+              className='underline cursor-pointer action'
+              onClick={() => onUpdate(record?.id, 'approved')}
+            >
+              Approve
+            </span>
+          )}
+        </div>
+      ),
     },
 
     {
-      title: 'Actions',
+      title: 'Ac-tions',
       dataIndex: 'actions',
       key: 'actions',
+      fixed: 'right',
+      width: 50,
 
-      showOnResponse: true,
-      showOnDesktop: true,
-
-      render: (text, record, index) => (
+      render: (text, record) => (
         <div className='flex gap-1 justify-center'>
           <DeleteOutlined
             style={{ color: 'red' }}
@@ -391,30 +371,20 @@ function Appointments() {
   return (
     <div>
       <Table
-        antTableProps={{
-          rowKey: (record) => record.key,
-          onRow: (record, rowIndex) => {
-            return {
-              onClick: (event) => {
-                console.log(record);
-              },
-            };
-          },
-          showHeader: true,
-          columns,
-          dataSource,
-          bordered: true,
-
-          pagination: {
-            current: page,
-            pageSize: pageSize,
-            onChange: (page, pageSize) => {
-              setPage(page);
-              setPageSize(pageSize);
-            },
+        rowKey={(record) => record.key}
+        showHeader={true}
+        columns={columns}
+        dataSource={dataSource}
+        bordered={true}
+        scroll={{ x: true }}
+        pagination={{
+          current: page,
+          pageSize: pageSize,
+          onChange: (page, pageSize) => {
+            setPage(page);
+            setPageSize(pageSize);
           },
         }}
-        mobileBreakPoint={1060}
       />
     </div>
   );

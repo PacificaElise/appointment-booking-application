@@ -410,47 +410,11 @@ hr {
   width: 400px;
 }
 
-.ant-card-body {
-  padding: 15px !important;
-  border: 1px solid #979696;
-}
-
-.ant-card-body > div > div > div > b {
-  font-weight: 700;
-}
-
 .ant-table-cell {
   padding: 12px 12px !important;
-}
-
-.ant-card-body > div {
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  align-items: flex-start;
-}
-
-.ant-card-body > div > div {
-  flex-direction: row;
-  width: 600px;
-  gap: 20px;
-  align-items: center;
-}
-
-.ant-card-body > div > div > div {
-  text-align: left !important;
-}
-
-.ant-card-body > div > div > div:first-child {
-  width: 30% !important;
-}
-
-.ant-card-body > div > div > div:last-child {
-  width: 70% !important;
-}
-
-.ant-divider-horizontal {
-  margin: 5px 0px;
+  word-break: keep-all !important;
+  hyphens: auto;
+  word-wrap: break-word;
 }
 
 .problem {
