@@ -4,15 +4,28 @@ import { useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { ShowLoader } from '../../redux/loaderSlice';
 import { getDoctors } from '../../requests/doctors';
+import Highlighter from 'react-highlight-words';
 
 const Search = Input.Search;
 
 function Home() {
   const navigate = useNavigate();
 
-  const onSearch = (value, _e, info) => console.log(info?.source, value);
-
   const [doctors, setDoctors] = useState([]);
+  const [search, setSearch] = useState([]);
+
+  const onSearch = (value, _e, info) => {
+    const results = doctors.filter((doctor) => {
+      return (
+        doctor.firstName.toLowerCase().indexOf(value.toLowerCase()) !== -1 ||
+        doctor.lastName.toLowerCase().indexOf(value.toLowerCase()) !== -1 ||
+        doctor.speciality.toLowerCase().indexOf(value.toLowerCase()) !== -1
+      );
+    });
+    if (results.length > 0) {
+      setSearch(results);
+    } else setSearch(doctors);
+  };
 
   const dispatch = useDispatch();
 
@@ -57,7 +70,7 @@ function Home() {
 
   const dropHandler = (e, doctor) => {
     e.preventDefault();
-    setDoctors(
+    (search.length > 0 ? setSearch : setDoctors)(
       doctors.map((d) => {
         if (d.id === doctor.id) {
           return { ...d, order: currentDoctorCard.order };
@@ -76,6 +89,12 @@ function Home() {
     else return -1;
   };
 
+  const [searchQuery, setsearchQuery] = useState('');
+
+  const onChange = (e) => {
+    setsearchQuery(e.target.value);
+  };
+
   return (
     <section className='flex flex-column p-2'>
       <div className='flex justify-between wrap gap-2'>
@@ -83,6 +102,7 @@ function Home() {
           placeholder='Search a doctor'
           className='w-300'
           onSearch={onSearch}
+          onChange={onChange}
           allowClear
         />
 
@@ -108,7 +128,7 @@ function Home() {
         gutter={[16, 16]}
         className='flex m-2 gap-2'
       >
-        {doctors
+        {(search.length ? search : doctors)
           .sort(sortDoctors)
           .filter((doctor) => doctor.status === 'approved')
           .map((doctor) => {
@@ -123,29 +143,59 @@ function Home() {
                 onDragOver={(e) => dragOverHandler(e)}
                 onDrop={(e) => dropHandler(e, doctor)}
               >
-                <div className='flex justify-between items-center gap-2'>
+                <div className='flex justify-start items-center gap-1'>
                   <h2 className='uppercase'>
-                    {doctor.firstName} {doctor.lastName}
+                    <Highlighter
+                      highlightStyle={{
+                        backgroundColor: '#ffc069',
+                        padding: 0,
+                      }}
+                      searchWords={[searchQuery]}
+                      autoEscape={true}
+                      textToHighlight={doctor.firstName}
+                    />
+                  </h2>
+                  <h2 className='uppercase'>
+                    <Highlighter
+                      highlightStyle={{
+                        backgroundColor: '#ffc069',
+                        padding: 0,
+                      }}
+                      searchWords={[searchQuery]}
+                      autoEscape={true}
+                      textToHighlight={doctor.lastName}
+                    />
                   </h2>
                 </div>
                 <hr />
-                <div className='flex justify-between items-center gap-2'>
+                <div className='flex justify-between items-center gap-1'>
                   <h5>Speciality:</h5>
-                  <h4 className='uppercase'>{doctor.speciality}</h4>
+
+                  <h4 className='uppercase'>
+                    <Highlighter
+                      highlightStyle={{
+                        backgroundColor: '#ffc069',
+                        padding: 0,
+                      }}
+                      searchWords={[searchQuery]}
+                      autoEscape={true}
+                      textToHighlight={doctor.speciality}
+                    />
+                  </h4>
                 </div>
-                <div className='flex justify-between items-center gap-2'>
+                <div className='flex justify-between items-center gap-1'>
                   <h5>Experience:</h5>
                   <h4>{doctor.experience} years</h4>
                 </div>
-                <div className='flex justify-between items-center gap-2'>
+                <div className='flex justify-between items-center gap-1'>
                   <h5>Fee:</h5>
                   <h4 className='uppercase'>{doctor.fee} $</h4>
                 </div>
-                <div className='flex justify-between items-center gap-2'>
+                <div className='flex justify-between items-center gap-1'>
                   <h5>Email:</h5>
                   <h4>{doctor.email}</h4>
                 </div>
-                <div className='flex justify-between items-center gap-2'>
+                <div className='flex justify-between items-center gap-1'>
                   <h5>Phone:</h5>
                   <h4>{doctor.phone}</h4>
                 </div>
