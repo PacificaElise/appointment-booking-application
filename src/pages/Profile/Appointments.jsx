@@ -291,52 +291,47 @@ function Appointments() {
       dataIndex: 'actions',
       key: 'actions',
 
-      render: (text, record) => {
-        if (record?.status === 'pending') {
-          return (
-            <div className='flex gap-1'>
-              <span
-                className='underline cursor-pointer action'
-                onClick={() => onUpdate(record.id, 'cancelled')}
-              >
-                Cancel
-              </span>
-              <span
-                className='underline cursor-pointer action'
-                onClick={() => onUpdate(record.id, 'approved')}
-              >
-                Approve
-              </span>
-            </div>
-          );
-        }
-        if (record?.status === 'approved') {
-          return (
-            <div className='flex gap-1'>
-              <span
-                className='underline cursor-pointer action'
-                onClick={() => onUpdate(record.id, 'cancelled')}
-              >
-                Cancel
-              </span>
-            </div>
-          );
-        }
-        if (record?.status === 'cancelled') {
-          return (
-            <div className='flex gap-1'>
-              <span
-                className='underline cursor-pointer action'
-                onClick={() => onUpdate(record.id, 'approved')}
-              >
-                Approve
-              </span>
-            </div>
-          );
-        }
-      },
       showOnResponse: true,
       showOnDesktop: true,
+
+      render: (text, record) => {
+        return (
+          <div className='flex gap-1'>
+            {record?.status === 'pending' && (
+              <>
+                <span
+                  className='underline cursor-pointer action'
+                  onClick={() => onUpdate(record.id, 'cancelled')}
+                >
+                  Cancel
+                </span>
+                <span
+                  className='underline cursor-pointer action'
+                  onClick={() => onUpdate(record.id, 'approved')}
+                >
+                  Approve
+                </span>
+              </>
+            )}
+            {record?.status === 'approved' && (
+              <span
+                className='underline cursor-pointer action'
+                onClick={() => onUpdate(record.id, 'cancelled')}
+              >
+                Cancel
+              </span>
+            )}
+            {record?.status === 'cancelled' && (
+              <span
+                className='underline cursor-pointer action'
+                onClick={() => onUpdate(record.id, 'approved')}
+              >
+                Approve
+              </span>
+            )}
+          </div>
+        );
+      },
     },
   ];
 
