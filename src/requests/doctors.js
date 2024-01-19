@@ -38,6 +38,12 @@ export const checkDoctorApplied = async (id) => {
       return {
         success: true,
         message: "Doctor's account is already applied",
+        data: doctors.docs.map((doc) => {
+          return {
+            ...doc.data(),
+            id: doc.id,
+          };
+        })[0],
       };
     }
     return {

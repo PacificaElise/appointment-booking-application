@@ -179,6 +179,11 @@ function BookAppointment() {
             </div>
 
             <div className='flex justify-between items-center gap-2'>
+              <h5 className='bold'>Address:</h5>
+              <h4>{doctor.address}</h4>
+            </div>
+
+            <div className='flex justify-between items-center gap-2'>
               <h5 className='bold'>Fee:</h5>
               <h4>{doctor.fee} $ /per session</h4>
             </div>
