@@ -1,10 +1,15 @@
 import { useState, useRef, useEffect } from 'react';
-import { Button, Input, Space, message } from 'antd';
-import { SearchOutlined } from '@ant-design/icons';
+import { Button, Input, Space, message, Modal } from 'antd';
+import {
+  SearchOutlined,
+  DeleteOutlined,
+  EditOutlined,
+} from '@ant-design/icons';
 import Highlighter from 'react-highlight-words';
 import { useDispatch } from 'react-redux';
 import { ShowLoader } from '../../redux/loaderSlice';
 import {
+  deleteAppointment,
   getAllAppointments,
   getDoctorAppointments,
   getUserAppointments,
@@ -191,6 +196,21 @@ function Appointments() {
     }
   };
 
+  const deleteAppointmentsFromDatabase = async (id) => {
+    dispatch(ShowLoader(true));
+    try {
+      const res = await deleteAppointment(id);
+      if (res.success) {
+        message.success(res.message);
+        getData();
+      } else throw new Error(res.message);
+    } catch (error) {
+      message.error(error.message);
+    } finally {
+      dispatch(ShowLoader(false));
+    }
+  };
+
   const dataSource = appointments || [];
 
   const columns = [
@@ -286,28 +306,29 @@ function Appointments() {
         return text.toUpperCase();
       },
     },
+
     (user.role === 'doctor' || user.role === 'admin') && {
-      title: 'Actions',
-      dataIndex: 'actions',
-      key: 'actions',
+      title: 'Confirmation',
+      dataIndex: 'confirmation',
+      key: 'confirmation',
 
       showOnResponse: true,
       showOnDesktop: true,
 
-      render: (text, record) => {
+      render: (text, record, indexs) => {
         return (
-          <div className='flex gap-1'>
+          <div className='flex gap-1 justify-center'>
             {record?.status === 'pending' && (
               <>
                 <span
                   className='underline cursor-pointer action'
-                  onClick={() => onUpdate(record.id, 'cancelled')}
+                  onClick={() => onUpdate(record?.id, 'cancelled')}
                 >
                   Cancel
                 </span>
                 <span
                   className='underline cursor-pointer action'
-                  onClick={() => onUpdate(record.id, 'approved')}
+                  onClick={() => onUpdate(record?.id, 'approved')}
                 >
                   Approve
                 </span>
@@ -316,7 +337,7 @@ function Appointments() {
             {record?.status === 'approved' && (
               <span
                 className='underline cursor-pointer action'
-                onClick={() => onUpdate(record.id, 'cancelled')}
+                onClick={() => onUpdate(record?.id, 'cancelled')}
               >
                 Cancel
               </span>
@@ -324,7 +345,7 @@ function Appointments() {
             {record?.status === 'cancelled' && (
               <span
                 className='underline cursor-pointer action'
-                onClick={() => onUpdate(record.id, 'approved')}
+                onClick={() => onUpdate(record?.id, 'approved')}
               >
                 Approve
               </span>
@@ -333,12 +354,52 @@ function Appointments() {
         );
       },
     },
+
+    {
+      title: 'Actions',
+      dataIndex: 'actions',
+      key: 'actions',
+
+      showOnResponse: true,
+      showOnDesktop: true,
+
+      render: (text, record, index) => (
+        <div className='flex gap-1 justify-center'>
+          <DeleteOutlined
+            style={{ color: 'red' }}
+            onClick={() => Delete(record)}
+          />
+        </div>
+      ),
+    },
   ];
+
+  const Delete = (record) => {
+    Modal.confirm({
+      title: 'Are you sure you want to delete the appointment?',
+      okType: 'danger',
+      okText: 'Yes',
+      onOk: () => {
+        deleteAppointmentsFromDatabase(record?.id);
+        setAppointments((pre) => {
+          return pre.filter((appointment) => appointment.id !== record?.id);
+        });
+      },
+    });
+  };
 
   return (
     <div>
       <Table
         antTableProps={{
+          rowKey: (record) => record.key,
+          onRow: (record, rowIndex) => {
+            return {
+              onClick: (event) => {
+                console.log(record);
+              },
+            };
+          },
           showHeader: true,
           columns,
           dataSource,

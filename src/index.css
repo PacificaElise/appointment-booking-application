@@ -441,8 +441,20 @@ hr {
   text-align: left !important;
 }
 
+.ant-card-body > div > div > div:first-child {
+  width: 30% !important;
+}
+
+.ant-card-body > div > div > div:last-child {
+  width: 70% !important;
+}
+
 .ant-divider-horizontal {
   margin: 5px 0px;
+}
+
+.problem {
+  max-width: 400px;
 }
 
 @media screen and (max-width: 865px) {

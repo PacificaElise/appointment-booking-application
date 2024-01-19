@@ -7,6 +7,8 @@ import {
   where,
   getDoc,
   doc,
+  deleteDoc,
+  setDoc,
 } from 'firebase/firestore';
 import CryptoJS from 'crypto-js';
 
@@ -107,6 +109,36 @@ export const getUserById = async (id) => {
         ...user.data(),
         id: user.id,
       },
+    };
+  } catch (error) {
+    return {
+      success: false,
+      message: error.message,
+    };
+  }
+};
+
+export const updateUser = async (payload) => {
+  try {
+    await setDoc(doc(database, 'users', payload.id), payload);
+    return {
+      success: true,
+      message: "User's information updated successfully",
+    };
+  } catch (error) {
+    return {
+      success: false,
+      message: error.message,
+    };
+  }
+};
+
+export const deleteUser = async (id) => {
+  try {
+    await deleteDoc(doc(database, 'users', id));
+    return {
+      success: true,
+      message: 'User was deleted',
     };
   } catch (error) {
     return {

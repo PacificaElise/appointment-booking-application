@@ -8,6 +8,7 @@ import {
   doc,
   updateDoc,
   getDoc,
+  deleteDoc,
 } from 'firebase/firestore';
 
 export const addDoctor = async (payload) => {
@@ -96,6 +97,21 @@ export const getDoctorById = async (id) => {
     return {
       success: true,
       data: doctor.data(),
+    };
+  } catch (error) {
+    return {
+      success: false,
+      message: error.message,
+    };
+  }
+};
+
+export const deleteDoctor = async (id) => {
+  try {
+    await deleteDoc(doc(database, 'doctors', id));
+    return {
+      success: true,
+      message: 'Doctor was deleted',
     };
   } catch (error) {
     return {

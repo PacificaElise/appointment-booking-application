@@ -1,6 +1,7 @@
 import {
   addDoc,
   collection,
+  deleteDoc,
   doc,
   getDocs,
   query,
@@ -128,6 +129,21 @@ export const updateAppointmentStatus = async (id, status) => {
     return {
       success: true,
       message: "Appointment's status updated",
+    };
+  } catch (error) {
+    return {
+      success: false,
+      message: error.message,
+    };
+  }
+};
+
+export const deleteAppointment = async (id) => {
+  try {
+    await deleteDoc(doc(database, 'appointments', id));
+    return {
+      success: true,
+      message: 'Appointment was deleted',
     };
   } catch (error) {
     return {

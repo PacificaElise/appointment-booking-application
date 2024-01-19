@@ -1,13 +1,18 @@
 import { useState, useEffect, useRef } from 'react';
 import { useDispatch } from 'react-redux';
 import { ShowLoader } from '../../redux/loaderSlice';
-import { Button, Input, Space, message } from 'antd';
-import { SearchOutlined } from '@ant-design/icons';
+import { Button, Input, Space, message, Modal } from 'antd';
+import {
+  SearchOutlined,
+  DeleteOutlined,
+  EditOutlined,
+} from '@ant-design/icons';
 import Highlighter from 'react-highlight-words';
 
-import { getDoctors, updateDoctor } from '../../requests/doctors';
+import { deleteDoctor, getDoctors, updateDoctor } from '../../requests/doctors';
 
 import Table from 'ant-responsive-table';
+import { deleteUser } from '../../requests/users';
 
 function DoctorsList() {
   const [doctors, setDoctors] = useState([]);
@@ -32,6 +37,36 @@ function DoctorsList() {
     dispatch(ShowLoader(true));
     try {
       const res = await updateDoctor(payload);
+      if (res.success) {
+        message.success(res.message);
+        getData();
+      } else throw new Error(res.message);
+    } catch (error) {
+      message.error(error.message);
+    } finally {
+      dispatch(ShowLoader(false));
+    }
+  };
+
+  const deleteDoctorFromDatabase = async (id) => {
+    dispatch(ShowLoader(true));
+    try {
+      const res = await deleteDoctor(id);
+      if (res.success) {
+        message.success(res.message);
+        getData();
+      } else throw new Error(res.message);
+    } catch (error) {
+      message.error(error.message);
+    } finally {
+      dispatch(ShowLoader(false));
+    }
+  };
+
+  const deleteUserFromDatabase = async (id) => {
+    dispatch(ShowLoader(true));
+    try {
+      const res = await deleteUser(id);
       if (res.success) {
         message.success(res.message);
         getData();
@@ -167,6 +202,37 @@ function DoctorsList() {
       ),
   });
 
+  const dataSource = doctors || [];
+
+  const [isEdit, setIsEdit] = useState(false);
+  const [editingDoctor, setEditingDoctor] = useState(null);
+
+  const Delete = (record) => {
+    Modal.confirm({
+      title: 'Are you sure you want to delete the doctor?',
+      okType: 'danger',
+      okText: 'Yes',
+
+      onOk: () => {
+        deleteDoctorFromDatabase(record?.id);
+        deleteUserFromDatabase(record?.id);
+        setDoctors((pre) => {
+          return pre.filter((doctor) => doctor.id !== record?.id);
+        });
+      },
+    });
+  };
+
+  const Edit = (record) => {
+    setIsEdit(true);
+    setEditingDoctor({ ...record });
+  };
+
+  const resetEditing = () => {
+    setIsEdit(false);
+    setEditingDoctor(null);
+  };
+
   const columns = [
     {
       title: 'First name',
@@ -291,9 +357,9 @@ function DoctorsList() {
       },
     },
     {
-      title: 'Actions',
-      dataIndex: 'actions',
-      key: 'actions',
+      title: 'Confirmation',
+      dataIndex: 'confirmation',
+      key: 'confirmation',
 
       render: (text, record) => {
         if (record?.status === 'pending' || record?.status === 'unblocked') {
@@ -357,9 +423,30 @@ function DoctorsList() {
       showOnResponse: true,
       showOnDesktop: true,
     },
-  ];
+    {
+      title: 'Actions',
+      dataIndex: 'actions',
+      key: 'actions',
 
-  const dataSource = doctors || [];
+      showOnResponse: true,
+      showOnDesktop: true,
+
+      render: (text, record) => {
+        return (
+          <div className='flex gap-1'>
+            <EditOutlined
+              style={{ color: 'black' }}
+              onClick={() => Edit(record)}
+            />
+            <DeleteOutlined
+              style={{ color: 'red' }}
+              onClick={() => Delete(record)}
+            />
+          </div>
+        );
+      },
+    },
+  ];
 
   return (
     <div>
@@ -380,8 +467,66 @@ function DoctorsList() {
             },
           },
         }}
-        mobileBreakPoint={985}
+        mobileBreakPoint={1070}
       />
+      <Modal
+        title="Edit doctor's information"
+        okText='Save'
+        open={isEdit}
+        onCancel={() => resetEditing()}
+        onOk={() => {
+          setDoctors((pre) => {
+            return pre.map((doctor) => {
+              if (doctor.id === editingDoctor?.id) {
+                changeStatus(editingDoctor);
+                return editingDoctor;
+              } else return doctor;
+            });
+          });
+          resetEditing();
+        }}
+      >
+        <Input
+          value={editingDoctor?.firstName}
+          onChange={(e) => {
+            setEditingDoctor((pre) => {
+              return { ...pre, firstName: e.target.value };
+            });
+          }}
+        ></Input>
+        <Input
+          value={editingDoctor?.lastName}
+          onChange={(e) => {
+            setEditingDoctor((pre) => {
+              return { ...pre, lastName: e.target.value };
+            });
+          }}
+        ></Input>
+        <Input
+          value={editingDoctor?.email}
+          onChange={(e) => {
+            setEditingDoctor((pre) => {
+              return { ...pre, email: e.target.value };
+            });
+          }}
+        ></Input>
+        <Input
+          value={editingDoctor?.phone}
+          onChange={(e) => {
+            setEditingDoctor((pre) => {
+              return { ...pre, phone: e.target.value };
+            });
+          }}
+        ></Input>
+        <Input
+          value={editingDoctor?.speciality}
+          onChange={(e) => {
+            setEditingDoctor((pre) => {
+              return { ...pre, speciality: e.target.value };
+            });
+          }}
+        ></Input>
+      </Modal>
     </div>
   );
 }

@@ -206,7 +206,7 @@ function BookAppointment() {
         <div className='flex gap-2 wrap my-2'>{date && getSlotsData()}</div>{' '}
         {selectedSlot && (
           <TextArea
-            className='w-400'
+            className='problem'
             showCount
             maxLength={300}
             onChange={onChangeReason}

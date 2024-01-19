@@ -1,12 +1,17 @@
 import { useState, useEffect, useRef } from 'react';
 import { useDispatch } from 'react-redux';
 import { ShowLoader } from '../../redux/loaderSlice';
-import { Button, Input, Space, message } from 'antd';
-import { SearchOutlined } from '@ant-design/icons';
+import { Button, Input, Space, message, Modal } from 'antd';
+import {
+  SearchOutlined,
+  EditOutlined,
+  DeleteOutlined,
+} from '@ant-design/icons';
 import Highlighter from 'react-highlight-words';
 import Table from 'ant-responsive-table';
 
-import { getUsers } from '../../requests/users';
+import { deleteUser, getUsers, updateUser } from '../../requests/users';
+import { deleteDoctor } from '../../requests/doctors';
 
 function UsersList() {
   const [users, setUsers] = useState([]);
@@ -19,6 +24,51 @@ function UsersList() {
       const res = await getUsers();
       if (res.success) {
         setUsers(res.data);
+      } else throw new Error(res.message);
+    } catch (error) {
+      message.error(error.message);
+    } finally {
+      dispatch(ShowLoader(false));
+    }
+  };
+
+  const updateUserDatabase = async (payload) => {
+    dispatch(ShowLoader(true));
+    try {
+      const res = await updateUser(payload);
+      if (res.success) {
+        message.success(res.message);
+        getData();
+      } else throw new Error(res.message);
+    } catch (error) {
+      message.error(error.message);
+    } finally {
+      dispatch(ShowLoader(false));
+    }
+  };
+
+  const deleteDoctorFromDatabase = async (id) => {
+    dispatch(ShowLoader(true));
+    try {
+      const res = await deleteDoctor(id);
+      if (res.success) {
+        message.success(res.message);
+        getData();
+      } else throw new Error(res.message);
+    } catch (error) {
+      message.error(error.message);
+    } finally {
+      dispatch(ShowLoader(false));
+    }
+  };
+
+  const deleteUserFromDatabase = async (id) => {
+    dispatch(ShowLoader(true));
+    try {
+      const res = await deleteUser(id);
+      if (res.success) {
+        message.success(res.message);
+        getData();
       } else throw new Error(res.message);
     } catch (error) {
       message.error(error.message);
@@ -226,9 +276,61 @@ function UsersList() {
         return text.toUpperCase();
       },
     },
+    {
+      title: 'Actions',
+      dataIndex: 'actions',
+      key: 'actions',
+
+      showOnResponse: true,
+      showOnDesktop: true,
+
+      render: (text, record) => {
+        return (
+          <div className='flex gap-1'>
+            <EditOutlined
+              style={{ color: 'black' }}
+              onClick={() => Edit(record)}
+            />
+            <DeleteOutlined
+              style={{ color: 'red' }}
+              onClick={() => Delete(record)}
+            />
+          </div>
+        );
+      },
+    },
   ];
 
   const dataSource = users;
+
+  const [isEdit, setIsEdit] = useState(false);
+  const [editingUser, setEditingUser] = useState(null);
+
+  const Delete = (record) => {
+    Modal.confirm({
+      title: 'Are you sure you want to delete the doctor?',
+      okType: 'danger',
+      okText: 'Yes',
+
+      onOk: () => {
+        deleteDoctorFromDatabase(record?.id);
+        deleteUserFromDatabase(record?.id);
+        setUsers((pre) => {
+          return pre.filter((doctor) => doctor.id !== record?.id);
+        });
+      },
+    });
+  };
+
+  const Edit = (record) => {
+    setIsEdit(true);
+    setEditingUser({ ...record });
+  };
+
+  const resetEditing = () => {
+    setIsEdit(false);
+    setEditingUser(null);
+  };
 
   return (
     <div>
@@ -251,6 +353,41 @@ function UsersList() {
         }}
         mobileBreakPoint={800}
       />
+
+      <Modal
+        title="Edit doctor's information"
+        okText='Save'
+        open={isEdit}
+        onCancel={() => resetEditing()}
+        onOk={() => {
+          setUsers((pre) => {
+            return pre.map((user) => {
+              if (user.id === editingUser?.id) {
+                updateUserDatabase(editingUser);
+                return editingUser;
+              } else return user;
+            });
+          });
+          resetEditing();
+        }}
+      >
+        <Input
+          value={editingUser?.name}
+          onChange={(e) => {
+            setEditingUser((pre) => {
+              return { ...pre, name: e.target.value };
+            });
+          }}
+        ></Input>
+        <Input
+          value={editingUser?.email}
+          onChange={(e) => {
+            setEditingUser((pre) => {
+              return { ...pre, email: e.target.value };
+            });
+          }}
+        ></Input>
+      </Modal>
     </div>
   );
 }
