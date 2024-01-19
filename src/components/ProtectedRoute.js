@@ -10,8 +10,7 @@ function ProtectedRoute({ children }) {
     if (!user) {
       navigate('/login');
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [user]);
   return (
     <div className='layout p-1'>
       <header className='header bg-white p-2 flex justify-between items-center'>

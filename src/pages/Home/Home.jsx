@@ -96,120 +96,122 @@ function Home() {
   };
 
   return (
-    <section className='flex flex-column p-2'>
-      <div className='flex justify-between wrap gap-2'>
-        <Search
-          placeholder='Search a doctor'
-          className='w-300'
-          onSearch={onSearch}
-          onChange={onChange}
-          allowClear
-        />
+    user && (
+      <section className='flex flex-column p-2'>
+        <div className='flex justify-between wrap gap-2'>
+          <Search
+            placeholder='Search a doctor'
+            className='w-300'
+            onSearch={onSearch}
+            onChange={onChange}
+            allowClear
+          />
 
-        {user.role === 'user' && (
-          <button
-            className='contained-btn my-1 p-1'
-            onClick={() => navigate('/apply-doctor')}
-          >
-            Apply Doctor
-          </button>
-        )}
+          {user?.role === 'user' && (
+            <button
+              className='contained-btn my-1 p-1'
+              onClick={() => navigate('/apply-doctor')}
+            >
+              Apply Doctor
+            </button>
+          )}
 
-        {user.role === 'admin' && (
-          <button
-            className='contained-btn my-1 p-1'
-            onClick={() => navigate('/admin')}
-          >
-            Approve Doctor
-          </button>
-        )}
-      </div>
-      <Row
-        gutter={[16, 16]}
-        className='flex m-2 gap-2'
-      >
-        {(search.length ? search : doctors)
-          .sort(sortDoctors)
-          .filter((doctor) => doctor.status === 'approved')
-          .map((doctor) => {
-            return (
-              <Col
-                key={doctor.id}
-                className='block p-1 flex flex-column gap-1 cursor-grab'
-                draggable={true}
-                onDragStart={(e) => dragStartHandler(e, doctor)}
-                onDragLeave={(e) => dragEndHandler(e)}
-                onDragEnd={(e) => dragEndHandler(e)}
-                onDragOver={(e) => dragOverHandler(e)}
-                onDrop={(e) => dropHandler(e, doctor)}
-              >
-                <div className='flex justify-start items-center gap-1'>
-                  <h2 className='uppercase'>
-                    <Highlighter
-                      highlightStyle={{
-                        backgroundColor: '#ffc069',
-                        padding: 0,
-                      }}
-                      searchWords={[searchQuery]}
-                      autoEscape={true}
-                      textToHighlight={doctor.firstName}
-                    />
-                  </h2>
-                  <h2 className='uppercase'>
-                    <Highlighter
-                      highlightStyle={{
-                        backgroundColor: '#ffc069',
-                        padding: 0,
-                      }}
-                      searchWords={[searchQuery]}
-                      autoEscape={true}
-                      textToHighlight={doctor.lastName}
-                    />
-                  </h2>
-                </div>
-                <hr />
-                <div className='flex justify-between items-center gap-1'>
-                  <h5>Speciality:</h5>
-
-                  <h4 className='uppercase'>
-                    <Highlighter
-                      highlightStyle={{
-                        backgroundColor: '#ffc069',
-                        padding: 0,
-                      }}
-                      searchWords={[searchQuery]}
-                      autoEscape={true}
-                      textToHighlight={doctor.speciality}
-                    />
-                  </h4>
-                </div>
-                <div className='flex justify-between items-center gap-1'>
-                  <h5>Experience:</h5>
-                  <h4>{doctor.experience} years</h4>
-                </div>
-                <div className='flex justify-between items-center gap-1'>
-                  <h5>Fee:</h5>
-                  <h4 className='uppercase'>{doctor.fee} $</h4>
-                </div>
-                <div className='flex justify-between items-center gap-1'>
-                  <h5>Email:</h5>
-                  <h4>{doctor.email}</h4>
-                </div>
-                <div className='flex justify-between items-center gap-1'>
-                  <h5>Phone:</h5>
-                  <h4>{doctor.phone}</h4>
-                </div>
-                <button
-                  className='contained-btn cursor-pointer my-1 p-1'
-                  onClick={() => navigate(`/book-appointment/${doctor.id}`)}
+          {user?.role === 'admin' && (
+            <button
+              className='contained-btn my-1 p-1'
+              onClick={() => navigate('/admin')}
+            >
+              Approve Doctor
+            </button>
+          )}
+        </div>
+        <Row
+          gutter={[16, 16]}
+          className='flex m-2 gap-2'
+        >
+          {(search.length ? search : doctors)
+            .sort(sortDoctors)
+            .filter((doctor) => doctor.status === 'approved')
+            .map((doctor) => {
+              return (
+                <Col
+                  key={doctor.id}
+                  className='block p-1 flex flex-column gap-1 cursor-grab'
+                  draggable={true}
+                  onDragStart={(e) => dragStartHandler(e, doctor)}
+                  onDragLeave={(e) => dragEndHandler(e)}
+                  onDragEnd={(e) => dragEndHandler(e)}
+                  onDragOver={(e) => dragOverHandler(e)}
+                  onDrop={(e) => dropHandler(e, doctor)}
                 >
-                  Apply Appointment
-                </button>
-              </Col>
-            );
-          })}
-      </Row>
-    </section>
+                  <div className='flex justify-start items-center gap-1'>
+                    <h2 className='uppercase'>
+                      <Highlighter
+                        highlightStyle={{
+                          backgroundColor: '#ffc069',
+                          padding: 0,
+                        }}
+                        searchWords={[searchQuery]}
+                        autoEscape={true}
+                        textToHighlight={doctor.firstName}
+                      />
+                    </h2>
+                    <h2 className='uppercase'>
+                      <Highlighter
+                        highlightStyle={{
+                          backgroundColor: '#ffc069',
+                          padding: 0,
+                        }}
+                        searchWords={[searchQuery]}
+                        autoEscape={true}
+                        textToHighlight={doctor.lastName}
+                      />
+                    </h2>
+                  </div>
+                  <hr />
+                  <div className='flex justify-between items-center gap-1'>
+                    <h5>Speciality:</h5>
+
+                    <h4 className='uppercase'>
+                      <Highlighter
+                        highlightStyle={{
+                          backgroundColor: '#ffc069',
+                          padding: 0,
+                        }}
+                        searchWords={[searchQuery]}
+                        autoEscape={true}
+                        textToHighlight={doctor.speciality}
+                      />
+                    </h4>
+                  </div>
+                  <div className='flex justify-between items-center gap-1'>
+                    <h5>Experience:</h5>
+                    <h4>{doctor.experience} years</h4>
+                  </div>
+                  <div className='flex justify-between items-center gap-1'>
+                    <h5>Fee:</h5>
+                    <h4 className='uppercase'>{doctor.fee} $</h4>
+                  </div>
+                  <div className='flex justify-between items-center gap-1'>
+                    <h5>Email:</h5>
+                    <h4>{doctor.email}</h4>
+                  </div>
+                  <div className='flex justify-between items-center gap-1'>
+                    <h5>Phone:</h5>
+                    <h4>{doctor.phone}</h4>
+                  </div>
+                  <button
+                    className='contained-btn cursor-pointer my-1 p-1'
+                    onClick={() => navigate(`/book-appointment/${doctor.id}`)}
+                  >
+                    Apply Appointment
+                  </button>
+                </Col>
+              );
+            })}
+        </Row>
+      </section>
+    )
   );
 }
 
